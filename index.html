@@ -25,7 +25,7 @@ button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827
 </style>
 </head>
 <body>
-<header><h1>🗺️ Timeline-Teller</h1><div class="sub">Your personal travel history analyzer</div></header>
+<header><h1>🗺️ Timeline-Teller</h1><div class="sub">Your personal travel history analyzer · V1.6</div></header>
 <main>
 <div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
 <div class="modalbox">
@@ -82,8 +82,8 @@ button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827
 
 <div class="card">
 <h2>📍 Time spent at places</h2>
-<p class="muted">Visits are grouped using place IDs when available, with a location grid fallback. The selected date range is applied.</p>
-<div id="places" class="list"></div>
+<p class="muted">All detected places are kept. Google’s export usually provides a Place ID and coordinates rather than the business/home name; TT never invents a name. Tap any place to locate it on the map. The selected date range is applied.</p>
+<div class="field" style="margin-bottom:10px"><label>Find a place</label><input id="placeSearch" type="search" placeholder="Search Place ID or coordinates"></div><div id="places" class="list"></div>
 </div>
 
 <div class="card">
@@ -132,7 +132,12 @@ function dur(s){s=Math.round(Math.max(0,s));let y=Math.floor(s/31536000);s%=3153
 function cluster(p){return p?Math.round(p[0]*180)/180+","+Math.round(p[1]*180)/180:null} // ~600m
 function routeKey(a,b){const x=cluster(a),y=cluster(b);if(!x||!y)return null;return x+" → "+y}
 function mode(t){return ({MOTORCYCLING:"🏍️ Motorcycle",IN_PASSENGER_VEHICLE:"🚗 Car",WALKING:"🚶 Walking",CYCLING:"🚲 Cycling",IN_BUS:"🚌 Bus",IN_TRAIN:"🚆 Train",FLYING:"✈️ Flight"})[t]||("🚙 "+String(t||"Travel").replaceAll("_"," ").toLowerCase())}
-function placeLabel(v){return v.id&&v.id!=="Unknown place"?"Place "+v.id.slice(-6):"Nearby place"}
+function placeLabel(v){
+  if(v && v.name) return v.name;
+  if(v && v.id && v.id!=="Unknown place") return "Place ID · "+v.id.slice(-8);
+  if(v && v.p) return "Location · "+v.p[0].toFixed(5)+", "+v.p[1].toFixed(5);
+  return "Unknown place";
+}
 function parse(d){
  data=d;segments=Array.isArray(d.semanticSegments)?d.semanticSegments:[];
  activities=segments.filter(s=>s.activity).map(s=>({start:s.startTime,end:s.endTime,distance:+(s.activity.distanceMeters||0),mode:s.activity.topCandidate?.type||"UNKNOWN",a:ll(s.activity.start?.latLng),b:ll(s.activity.end?.latLng)}));
@@ -156,11 +161,24 @@ function render(){
 }
 function renderPlaces(vs,f,t){
  const g=new Map();
- for(const v of vs){const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");if(!g.has(k))g.set(k,{key:k,label:placeLabel(v),sec:0,count:0,p:v.p});const x=g.get(k);x.sec+=overlap(v.start,v.end,f,t);x.count++}
- const all=[...g.values()].sort((x,y)=>y.sec-x.sec);
- const a=all.slice(0,placesShown);
- let html=a.length?a.map((x,i)=>{const safe=encodeURIComponent(x.key);return `<div class="item clickable" onclick="showPlace('${safe}')" title="Tap to show this place on the map"><strong>${i+1}. ${esc(x.label)}</strong><br><span class="pill">⏱️ ${dur(x.sec)}</span><span class="pill">${x.count} visit${x.count==1?"":"s"}</span><div class="placehint">📍 Tap to show this place and nearby journeys on the map</div></div>`}).join(""):"<span class='muted'>No visits in this range.</span>";
- if(all.length>placesShown) html+=`<button class="smallbtn morebtn" onclick="showMorePlaces()">Show more (${all.length-placesShown} more)</button>`;
+ for(const v of vs){
+   const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");
+   if(!g.has(k)) g.set(k,{key:k,label:placeLabel(v),sec:0,count:0,p:v.p,id:v.id});
+   const x=g.get(k); x.sec+=overlap(v.start,v.end,f,t); x.count++;
+   if(!x.p&&v.p)x.p=v.p;
+ }
+ let all=[...g.values()].sort((x,y)=>y.sec-x.sec);
+ const q=($("placeSearch")?.value||"").trim().toLowerCase();
+ if(q) all=all.filter(x=>(x.label+" "+(x.id||"")+" "+(x.p?x.p.join(" "):"")).toLowerCase().includes(q));
+ const shown=Math.min(placesShown,all.length);
+ let html=all.slice(0,shown).map((x,i)=>{
+   const safe=encodeURIComponent(x.key);
+   const coords=x.p?`<div class="placehint">📍 ${x.p[0].toFixed(5)}, ${x.p[1].toFixed(5)}</div>`:"<div class='placehint'>📍 No coordinates in export</div>";
+   const maps=x.p?`<a href="https://www.google.com/maps/search/?api=1&query=${x.p[0]},${x.p[1]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open in Maps</a>`:"";
+   return `<div class="item clickable" onclick="showPlace('${safe}')" title="Tap to show this place on the TT map"><strong>${i+1}. ${esc(x.label)}</strong><br><span class="pill">⏱️ ${dur(x.sec)}</span><span class="pill">${x.count} visit${x.count==1?"":"s"}</span>${coords}<div class="placehint">🗺️ Tap to show on TT map ${maps?"• "+maps:""}</div></div>`;
+ }).join("");
+ if(!html) html="<span class='muted'>No visits in this date range.</span>";
+ if(all.length>shown) html+=`<button class="smallbtn morebtn" onclick="showMorePlaces()">Show more (${all.length-shown} more)</button>`;
  else if(all.length>5) html+=`<button class="smallbtn morebtn" onclick="showLessPlaces()">Show less</button>`;
  $("places").innerHTML=html;
 }
@@ -179,14 +197,15 @@ function showLessPlaces(){placesShown=5;render();}
 function showMoreRoutes(){routesShown+=5;render();}
 function showLessRoutes(){routesShown=5;render();}
 function showPlace(encoded){
- const key=decodeURIComponent(encoded);
- const f=$("from").value,t=$("to").value;
+ const key=decodeURIComponent(encoded), f=$("from").value,t=$("to").value;
  const vs=visits.filter(v=>{const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");return k===key&&inRange(v.start,v.end,f,t)});
  const p=vs.find(v=>v.p)?.p;
  if(!p){$("mapStatus").textContent="This place has no coordinates in the exported Timeline data.";return;}
- selectedPlace={key,p,label:vs[0]?.id&&vs[0].id!=="Unknown place"?placeLabel(vs[0]):"Selected place"};
+ selectedPlace={key,p,label:placeLabel(vs[0])};
  selectedRoute=null;
- drawMap(activities.filter(x=>inRange(x.start,x.end,f,t)),f,t);
+ const acts=activities.filter(x=>inRange(x.start,x.end,f,t));
+ drawMap(acts,f,t);
+ if(map){map.setView(p,15); L.popup().setLatLng(p).setContent("<b>📍 "+esc(selectedPlace.label)+"</b><br>Visits: "+vs.length).openOn(map);}
 }
 function highlight(encoded){selectedRoute=decodeURIComponent(encoded);drawMap(activities.filter(x=>inRange(x.start,x.end,$("from").value,$("to").value)),$("from").value,$("to").value)}
 function nameTrip(encoded){const k=decodeURIComponent(encoded);const old=localStorage.getItem("tt-name-"+k)||"";const n=prompt("Name this regular trip:",old);if(n===null)return;if(n.trim())localStorage.setItem("tt-name-"+k,n.trim());renderNamed($("from").value,$("to").value)}
@@ -220,7 +239,8 @@ function drawMap(acts,f,t){
  $("mapStatus").textContent=lines?`${lines.toLocaleString()} route lines • ${points.toLocaleString()} GPS points shown${chosen?" • highlighted route":""}`:"No GPS route points were found for this date range.";
 }
 $("file").addEventListener("change",e=>{const file=e.target.files[0];if(!file)return;$("status").textContent="Reading "+file.name+"…";const r=new FileReader();r.onload=()=>{try{parse(JSON.parse(r.result));$("status").textContent="Loaded successfully. Your JSON stays in this browser tab."}catch(err){$("status").textContent="Could not read this JSON file. Please choose the Google Maps Timeline export."}};r.readAsText(file)});
-["from","to","fuelPrice","mileage"].forEach(id=>$(id).addEventListener("input",()=>{selectedRoute=null;selectedPlace=null;render()}));
+["from","to","fuelPrice","mileage"].forEach(id=>$(id).addEventListener("input",()=>{selectedRoute=null;selectedPlace=null;placesShown=5;routesShown=5;render()}));
+$("placeSearch").addEventListener("input",()=>{placesShown=5;render()});
 $("latest").onclick=()=>{const hi=$("to").max;$("from").value=hi;$("to").value=hi;selectedRoute=null;selectedPlace=null;render()};
 $("allDates").onclick=()=>{ $("from").value=$("from").min;$("to").value=$("to").max;selectedRoute=null;selectedPlace=null;render()};
 $("clear").onclick=()=>{data=null;segments=[];activities=[];visits=[];pathPoints=[];$("dashboard").classList.add("hidden");$("file").value="";$("status").textContent="Imported data cleared."};
