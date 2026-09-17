@@ -121,7 +121,7 @@ button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-let data=null, segments=[], activities=[], visits=[], pathPoints=[], map=null, routeLayer=null, markerLayer=null, selectedRoute=null, selectedPlace=null;
+let data=null, segments=[], activities=[], visits=[], pathPoints=[], map=null, routeLayer=null, markerLayer=null, selectedRoute=null, selectedPlace=null, placesShown=5, routesShown=5;
 const $=x=>document.getElementById(x);
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function ll(s){if(!s)return null;const m=String(s).match(/(-?\d+(?:\.\d+)?)\D*,\s*(-?\d+(?:\.\d+)?)/);return m?[+m[1],+m[2]]:null}
@@ -156,7 +156,7 @@ function render(){
 }
 function renderPlaces(vs,f,t){
  const g=new Map();
- for(const v of vs){const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");if(!g.has(k))g.set(k,{label:placeLabel(v),sec:0,count:0,p:v.p});const x=g.get(k);x.sec+=overlap(v.start,v.end,f,t);x.count++}
+ for(const v of vs){const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");if(!g.has(k))g.set(k,{key:k,label:placeLabel(v),sec:0,count:0,p:v.p});const x=g.get(k);x.sec+=overlap(v.start,v.end,f,t);x.count++}
  const all=[...g.values()].sort((x,y)=>y.sec-x.sec);
  const a=all.slice(0,placesShown);
  let html=a.length?a.map((x,i)=>{const safe=encodeURIComponent(x.key);return `<div class="item clickable" onclick="showPlace('${safe}')" title="Tap to show this place on the map"><strong>${i+1}. ${esc(x.label)}</strong><br><span class="pill">⏱️ ${dur(x.sec)}</span><span class="pill">${x.count} visit${x.count==1?"":"s"}</span><div class="placehint">📍 Tap to show this place and nearby journeys on the map</div></div>`}).join(""):"<span class='muted'>No visits in this range.</span>";
