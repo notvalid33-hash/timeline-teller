@@ -4,248 +4,146 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>Timeline-Teller</title>
+<title>Timeline-Teller V2.0</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-header{background:#111827;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:1000}h1{font-size:23px;margin:0}h2{font-size:18px;margin:0 0 10px}.sub{color:#cbd5e1;font-size:13px;margin-top:4px}
-main{max-width:1000px;margin:auto;padding:14px}.card{background:#fff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 12px #0000000b}
+header{background:#111827;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:1000}h1{font-size:24px;margin:0}.sub{color:#cbd5e1;font-size:13px;margin-top:4px}
+main{max-width:1050px;margin:auto;padding:14px}.card{background:#fff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 12px #0000000b}h2{font-size:18px;margin:0 0 10px}
 .row{display:flex;gap:10px;flex-wrap:wrap}.field{flex:1;min-width:135px}label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px}
 input,button,select{font:inherit}input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;background:#fff}
-button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827;color:#fff;font-weight:700;cursor:pointer;display:inline-block}.secondary{background:#475569}.success{background:#166534}.danger{background:#b91c1c}
-.muted{font-size:13px;color:#64748b}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:11px;border-radius:12px;font-size:13px}
-.hidden{display:none}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#f8fafc;border-radius:12px;padding:12px}.stat span{font-size:12px;color:#64748b}.stat b{display:block;font-size:21px;margin-top:2px}
+button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827;color:#fff;font-weight:700;cursor:pointer;display:inline-block}button:disabled{opacity:.55;cursor:default}
+.secondary{background:#475569}.success{background:#166534}.danger{background:#b91c1c}.linkbtn{background:#e0e7ff;color:#3730a3;text-decoration:none;border-radius:9px;padding:7px 9px;font-weight:700;display:inline-block}
+.muted{font-size:13px;color:#64748b}.notice{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:11px;border-radius:12px;font-size:13px}.hidden{display:none}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#f8fafc;border-radius:12px;padding:12px}.stat span{font-size:12px;color:#64748b}.stat b{display:block;font-size:21px;margin-top:2px}
 .list{display:flex;flex-direction:column;gap:8px}.item{border:1px solid #e2e8f0;border-radius:12px;padding:12px}.item strong{font-size:15px}.pill{display:inline-block;background:#eef2ff;border-radius:999px;padding:5px 8px;font-size:12px;margin:5px 4px 0 0}
-#map{height:400px;border-radius:14px;overflow:hidden}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px;border-bottom:1px solid #e5e7eb}th{color:#475569}
-.smallbtn{padding:7px 9px;font-size:12px}.fileinput{display:none}
-.clickable{cursor:pointer}.clickable:active{transform:scale(.995)}
-.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;z-index:3000}.modal.hidden{display:none}.modalbox{background:#fff;border-radius:18px;max-width:520px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:0 12px 40px #0005}.modalbox h2{margin-top:0}.modalbox ol{padding-left:22px}.modalbox li{margin:9px 0}.modalbox .close{width:100%;margin-top:12px}.placehint{font-size:12px;color:#64748b;margin-top:6px}
-@media(min-width:650px){.stats{grid-template-columns:repeat(4,1fr)}}
+.smallbtn{padding:7px 9px;font-size:12px}.fileinput{display:none}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.item-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:8px}.progress>div{height:100%;width:0;background:#334155;transition:width .2s}
+.countbar{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}.searchrow{display:flex;gap:8px}.searchrow input{flex:1}
+#map{height:430px;border-radius:14px;overflow:hidden}.maptools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.placehint{font-size:12px;color:#64748b;margin-top:6px}.ok{color:#166534;font-weight:700}.empty{padding:10px 0}
+.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;z-index:3000}.modal.hidden{display:none}.modalbox{background:#fff;border-radius:18px;max-width:540px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:0 12px 40px #0005}.modalbox h2{margin-top:0}.modalbox ol{padding-left:22px}.modalbox li{margin:9px 0}.modalbox .close{width:100%;margin-top:12px}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two-col .card{margin:0}}
 </style>
 </head>
 <body>
-<header><h1>🗺️ Timeline-Teller</h1><div class="sub">Your personal travel history analyzer · V1.6</div></header>
+<header><h1>🗺️ Timeline-Teller</h1><div class="sub">Your personal travel history analyzer · V2.0</div></header>
 <main>
-<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-<div class="modalbox">
+<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="modalbox">
 <h2 id="helpTitle">📥 How to export Timeline.json</h2>
-<p class="muted">TT needs the Google Maps Timeline export from your Android phone. The file is processed locally in this browser and is not uploaded to TT.</p>
+<p class="muted">TT uses the Google Maps Timeline export from your Android phone. The file is processed locally in this browser and is not uploaded to GitHub or sent to TT.</p>
 <ol><li>Open your phone's <b>Settings</b>.</li><li>Tap <b>Location</b> → <b>Location services</b> → <b>Timeline</b>.</li><li>Tap <b>Export Timeline data</b>.</li><li>Tap <b>Continue</b>, choose where to save the file, then tap <b>Save</b>.</li><li>Return to Timeline-Teller and tap <b>Choose Timeline.json</b>.</li></ol>
-<p class="muted">Google's menu names can vary slightly by Android phone/version.</p>
-<button class="close" onclick="closeHelp()">Got it</button>
+<p class="muted">Google's menu names can vary slightly by Android phone/version.</p><button class="close" onclick="closeHelp()">Got it</button>
 </div></div>
-<section class="card">
-<h2>Import your Google Maps Timeline</h2>
-<p class="muted">Choose Timeline.json from your phone. TT processes it locally in your browser; the JSON is not uploaded to this GitHub site.</p>
-<label class="filebtn">📂 Choose Timeline.json<input id="file" class="fileinput" type="file" accept=".json,application/json"></label>
-<button class="secondary smallbtn" style="margin-left:6px" onclick="openHelp()">❓ How to get JSON</button>
-<p id="status" class="muted"></p>
-</section>
-
+<section class="card"><h2>📥 Import your Google Maps Timeline</h2><p class="muted">Choose your exported <b>Timeline.json</b>. TT processes the file locally in your browser; it is never uploaded to this GitHub site.</p>
+<div class="toolbar"><label class="filebtn">📂 Choose Timeline.json<input id="file" class="fileinput" type="file" accept=".json,application/json"></label><button class="secondary smallbtn" onclick="openHelp()">❓ How to get JSON</button></div>
+<div id="loadProgress" class="progress hidden"><div></div></div><p id="status" class="muted"></p></section>
 <section id="dashboard" class="hidden">
-<div class="card">
-<h2>📅 Data coverage</h2>
-<div id="coverage"></div>
-</div>
-
-<div class="card">
-<h2>🔎 Analyze a date range</h2>
-<div class="row">
-<div class="field"><label>From</label><input id="from" type="date"></div>
-<div class="field"><label>To</label><input id="to" type="date"></div>
-</div>
-<div style="margin-top:10px" class="row">
-<button id="latest" class="secondary">Latest day</button>
-<button id="allDates" class="secondary">Entire JSON</button>
-</div>
-</div>
-
-<div class="card">
-<h2>📊 Summary</h2>
-<div class="stats">
-<div class="stat"><span>Total distance</span><b id="distance">0 km</b></div>
-<div class="stat"><span>Journeys</span><b id="journeys">0</b></div>
-<div class="stat"><span>Travel time</span><b id="travelTime">0m</b></div>
-<div class="stat"><span>Places</span><b id="placeCount">0</b></div>
-</div>
-</div>
-
-<div class="card">
-<h2>⛽ Fuel calculator</h2>
-<div class="row">
-<div class="field"><label>Fuel price (₹/L)</label><input id="fuelPrice" type="number" value="70" min="0" step="0.01"></div>
-<div class="field"><label>Mileage (km/L)</label><input id="mileage" type="number" value="40" min="0.1" step="0.1"></div>
-</div>
-<p id="fuel" style="font-weight:700"></p>
-</div>
-
-<div class="card">
-<h2>📍 Time spent at places</h2>
-<p class="muted">All detected places are kept. Google’s export usually provides a Place ID and coordinates rather than the business/home name; TT never invents a name. Tap any place to locate it on the map. The selected date range is applied.</p>
-<div class="field" style="margin-bottom:10px"><label>Find a place</label><input id="placeSearch" type="search" placeholder="Search Place ID or coordinates"></div><div id="places" class="list"></div>
-</div>
-
-<div class="card">
-<h2>🔁 Repeated journeys</h2>
-<p class="muted">Small GPS differences are grouped so repeated trips can be counted. Tap a route to highlight its journeys on the map.</p>
-<div id="routes" class="list"></div>
-</div>
-
-<div class="card">
-<h2>🏷️ Named regular trips</h2>
-<div id="named" class="list"></div>
-</div>
-
-<div class="card">
-<h2>🗺️ Map</h2>
-<div id="map"></div>
-<p id="mapStatus" class="muted"></p>
-<p class="muted">Map tiles require internet access. Your Timeline JSON is still processed locally.</p>
-</div>
-
-<div class="card">
-<h2>🔔 Daily reminder</h2>
-<div class="row">
-<div class="field"><label>Reminder time</label><input id="reminderTime" type="time" value="21:00"></div>
-<div class="field" style="align-self:end"><button id="reminderBtn" class="success">Enable reminder</button></div>
-</div>
-<p id="reminderStatus" class="muted">Browser notifications must be allowed. Exact background delivery depends on Android/browser support; a native APK can provide more reliable scheduled notifications later.</p>
-</div>
-
-<div class="card">
-<button id="clear" class="danger">Clear imported Timeline data</button>
-</div>
-</section>
-</main>
-
+<div id="integrity" class="card"></div>
+<div class="card"><h2>📅 Data coverage</h2><div id="coverage"></div></div>
+<div class="card"><h2>🔎 Analyze a date range</h2><div class="row"><div class="field"><label>From</label><input id="from" type="date"></div><div class="field"><label>To</label><input id="to" type="date"></div></div><div style="margin-top:10px" class="row"><button id="latest" class="secondary">Latest day</button><button id="allDates" class="secondary">Entire JSON</button></div></div>
+<div class="card"><h2>📊 Summary</h2><div class="stats"><div class="stat"><span>Total distance</span><b id="distance">0 km</b></div><div class="stat"><span>Journeys</span><b id="journeys">0</b></div><div class="stat"><span>Travel time</span><b id="travelTime">0m</b></div><div class="stat"><span>Places</span><b id="placeCount">0</b></div></div></div>
+<div class="two-col"><div class="card"><h2>⛽ Fuel calculator</h2><div class="row"><div class="field"><label>Fuel price (₹/L)</label><input id="fuelPrice" type="number" value="70" min="0" step="0.01"></div><div class="field"><label>Mileage (km/L)</label><input id="mileage" type="number" value="40" min="0.1" step="0.1"></div></div><p id="fuel" style="font-weight:700"></p></div>
+<div class="card"><h2>🔔 Daily reminder</h2><div class="row"><div class="field"><label>Reminder time</label><input id="reminderTime" type="time" value="21:00"></div><div class="field" style="align-self:end"><button id="reminderBtn" class="success">Enable reminder</button></div></div><p id="reminderStatus" class="muted">Browser notifications can be limited in the background on Android. V2 stores the chosen time and schedules a browser timer while the page/app is running; a native Android APK is more reliable for exact daily delivery.</p></div></div>
+<div class="card"><h2>📍 Time spent at places</h2><p class="muted">All distinct Place IDs in the selected range are kept. The Google Timeline JSON normally contains a Place ID and coordinates, not a readable business/home name, so TT does not invent names. Use <b>Open in Google Maps</b> to inspect the corresponding place.</p>
+<div class="searchrow"><input id="placeSearch" type="search" placeholder="Search Place ID or coordinates"><button id="clearPlaceSearch" class="secondary smallbtn">Clear</button></div><div class="countbar"><span id="placeCountLabel" class="muted"></span><span class="muted">Sorted by time spent</span></div><div id="places" class="list"></div></div>
+<div class="card"><h2>🔁 Repeated journeys</h2><p class="muted">Trips are grouped by rounded start/end GPS points so small GPS differences do not split an otherwise repeated route. Tap a route to highlight its journeys on the map.</p><div class="countbar"><span id="routeCountLabel" class="muted"></span><span class="muted">Sorted by trip count</span></div><div id="routes" class="list"></div></div>
+<div class="card"><h2>🏷️ Named regular trips</h2><div id="named" class="list"></div></div>
+<div class="card"><h2>🗺️ Map</h2><div id="map"></div><div class="maptools"><button id="resetMap" class="secondary smallbtn">Reset map</button><button id="clearSelection" class="secondary smallbtn">Clear selection</button></div><p id="mapStatus" class="muted"></p><p class="muted">Map tiles require internet access. Your Timeline JSON remains local.</p></div>
+<div class="card"><button id="clear" class="danger">Clear imported Timeline data</button></div>
+</section></main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-let data=null, segments=[], activities=[], visits=[], pathPoints=[], map=null, routeLayer=null, markerLayer=null, selectedRoute=null, selectedPlace=null, placesShown=5, routesShown=5;
-const $=x=>document.getElementById(x);
-const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function ll(s){if(!s)return null;const m=String(s).match(/(-?\d+(?:\.\d+)?)\D*,\s*(-?\d+(?:\.\d+)?)/);return m?[+m[1],+m[2]]:null}
-function day(t){return new Date(t).toISOString().slice(0,10)}
-function overlap(a,b,from,to){const x=Math.max(Date.parse(a),Date.parse(from+"T00:00:00"));const y=Math.min(Date.parse(b),Date.parse(to+"T23:59:59.999"));return Math.max(0,(y-x)/1000)}
-function inRange(a,b,from,to){return Date.parse(b)>=Date.parse(from+"T00:00:00")&&Date.parse(a)<=Date.parse(to+"T23:59:59.999")}
-function dur(s){s=Math.round(Math.max(0,s));let y=Math.floor(s/31536000);s%=31536000;let mo=Math.floor(s/2592000);s%=2592000;let d=Math.floor(s/86400);s%=86400;let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);let out=[];if(y)out.push(y+"y");if(mo)out.push(mo+"mo");if(d)out.push(d+"d");if(h)out.push(h+"h");if(m)out.push(m+"m");return out.join(" ")||"0m"}
-function cluster(p){return p?Math.round(p[0]*180)/180+","+Math.round(p[1]*180)/180:null} // ~600m
-function routeKey(a,b){const x=cluster(a),y=cluster(b);if(!x||!y)return null;return x+" → "+y}
-function mode(t){return ({MOTORCYCLING:"🏍️ Motorcycle",IN_PASSENGER_VEHICLE:"🚗 Car",WALKING:"🚶 Walking",CYCLING:"🚲 Cycling",IN_BUS:"🚌 Bus",IN_TRAIN:"🚆 Train",FLYING:"✈️ Flight"})[t]||("🚙 "+String(t||"Travel").replaceAll("_"," ").toLowerCase())}
-function placeLabel(v){
-  if(v && v.name) return v.name;
-  if(v && v.id && v.id!=="Unknown place") return "Place ID · "+v.id.slice(-8);
-  if(v && v.p) return "Location · "+v.p[0].toFixed(5)+", "+v.p[1].toFixed(5);
-  return "Unknown place";
-}
-function parse(d){
- data=d;segments=Array.isArray(d.semanticSegments)?d.semanticSegments:[];
- activities=segments.filter(s=>s.activity).map(s=>({start:s.startTime,end:s.endTime,distance:+(s.activity.distanceMeters||0),mode:s.activity.topCandidate?.type||"UNKNOWN",a:ll(s.activity.start?.latLng),b:ll(s.activity.end?.latLng)}));
- visits=segments.filter(s=>s.visit).map(s=>({start:s.startTime,end:s.endTime,id:s.visit.topCandidate?.placeId||"Unknown place",type:s.visit.topCandidate?.semanticType||"",p:ll(s.visit.topCandidate?.placeLocation?.latLng)}));
- pathPoints=segments.flatMap(s=>(s.timelinePath||[]).map(p=>({time:p.time,p:ll(p.point)}))).filter(x=>x.p);
- const times=segments.flatMap(s=>[s.startTime,s.endTime]).filter(Boolean).sort();
- const lo=day(times[0]),hi=day(times.at(-1));
- $("coverage").innerHTML="<b>"+new Date(times[0]).toLocaleString()+"</b> → <b>"+new Date(times.at(-1)).toLocaleString()+"</b><br><span class='muted'>"+segments.length.toLocaleString()+" segments</span>";
- ["from","to"].forEach(id=>{$(id).min=lo;$(id).max=hi});
- $("from").value=lo;$("to").value=hi;$("dashboard").classList.remove("hidden");initMap();render();
-}
-function initMap(){if(map)return;map=L.map("map").setView([20.6,78.9],5);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);routeLayer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map)}
-function render(){
- if(!data)return;const f=$("from").value,t=$("to").value;if(!f||!t||f>t)return;
- const acts=activities.filter(x=>inRange(x.start,x.end,f,t)), vs=visits.filter(x=>inRange(x.start,x.end,f,t));
- const km=acts.reduce((s,x)=>s+x.distance,0)/1000, sec=acts.reduce((s,x)=>s+overlap(x.start,x.end,f,t),0);
- $("distance").textContent=km.toLocaleString(undefined,{maximumFractionDigits:1})+" km";$("journeys").textContent=acts.length.toLocaleString();$("travelTime").textContent=dur(sec);$("placeCount").textContent=new Set(vs.map(v=>v.id)).size.toLocaleString();
- const fp=+$("fuelPrice").value||0,mi=+$("mileage").value||0;
- $("fuel").textContent=mi?`Estimated fuel: ${(km/mi).toLocaleString(undefined,{maximumFractionDigits:2})} L • Cost: ₹${(km/mi*fp).toLocaleString(undefined,{maximumFractionDigits:2})} • ₹${(fp/mi).toLocaleString(undefined,{maximumFractionDigits:2})}/km`:"Enter mileage";
- renderPlaces(vs,f,t);renderRoutes(acts);renderNamed(f,t);drawMap(acts,f,t);
-}
-function renderPlaces(vs,f,t){
- const g=new Map();
- for(const v of vs){
-   const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");
-   if(!g.has(k)) g.set(k,{key:k,label:placeLabel(v),sec:0,count:0,p:v.p,id:v.id});
-   const x=g.get(k); x.sec+=overlap(v.start,v.end,f,t); x.count++;
-   if(!x.p&&v.p)x.p=v.p;
+const APP_VERSION='2.0.0';
+let data=null,segments=[],activities=[],visits=[],pathPoints=[],map=null,routeLayer=null,markerLayer=null,selectedRoute=null,selectedPlace=null,placesShown=5,routesShown=5,integrityInfo=null,reminderTimer=null,pathTimesCache=[];
+const $=id=>document.getElementById(id);
+const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function ll(value){if(value==null)return null;if(Array.isArray(value)&&value.length>=2){const a=Number(value[0]),b=Number(value[1]);return Number.isFinite(a)&&Number.isFinite(b)?[a,b]:null}const m=String(value).match(/(-?\d+(?:\.\d+)?)°?\s*,\s*(-?\d+(?:\.\d+)?)°?/);return m?[+m[1],+m[2]]:null}
+function datePart(t){return String(t||'').slice(0,10)}
+function rangeStart(d){return new Date(d+'T00:00:00').getTime()}
+function rangeEnd(d){return new Date(d+'T23:59:59.999').getTime()}
+function overlapSeconds(a,b,f,t){const x=Math.max(Date.parse(a),rangeStart(f)),y=Math.min(Date.parse(b),rangeEnd(t));return Math.max(0,(y-x)/1000)}
+function inRange(a,b,f,t){return Date.parse(b)>=rangeStart(f)&&Date.parse(a)<=rangeEnd(t)}
+function formatDuration(sec){sec=Math.max(0,Math.round(sec));const u=[['y',31536000],['mo',2592000],['d',86400],['h',3600],['m',60]],o=[];let s=sec;for(const [k,n] of u){const q=Math.floor(s/n);if(q){o.push(q+k);s%=n}}return o.join(' ')||'0m'}
+function cluster(p){return p?Math.round(p[0]*180)/180+','+Math.round(p[1]*180)/180:null}
+function routeKey(a,b){const x=cluster(a),y=cluster(b);return x&&y?x+' → '+y:null}
+function mode(t){return ({MOTORCYCLING:'🏍️ Motorcycle',IN_PASSENGER_VEHICLE:'🚗 Car',WALKING:'🚶 Walking',CYCLING:'🚲 Cycling',IN_BUS:'🚌 Bus',IN_TRAIN:'🚆 Train',FLYING:'✈️ Flight'})[t]||('🚙 '+String(t||'Travel').replaceAll('_',' ').toLowerCase())}
+function haversine(a,b){if(!a||!b)return Infinity;const R=6371,dLat=(b[0]-a[0])*Math.PI/180,dLon=(b[1]-a[1])*Math.PI/180,la=a[0]*Math.PI/180,lb=b[0]*Math.PI/180,h=Math.sin(dLat/2)**2+Math.sin(dLon/2)**2*Math.cos(la)*Math.cos(lb)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.min(1,Math.sqrt(h)))}
+function placeLabel(v){if(v?.name)return v.name;if(v?.id&&v.id!=='Unknown place')return 'Place ID · '+v.id;return v?.p?'Location · '+v.p[0].toFixed(5)+', '+v.p[1].toFixed(5):'Unknown place'}
+function uniquePlaceCount(vs){return new Set(vs.filter(v=>v.id&&v.id!=='Unknown place').map(v=>v.id)).size}
+function parseTimeline(d){
+ data=d;segments=Array.isArray(d?.semanticSegments)?d.semanticSegments:[];activities=[];visits=[];pathPoints=[];
+ for(let i=0;i<segments.length;i++){const s=segments[i];if(!s||!s.startTime||!s.endTime)continue;
+   if(s.activity)activities.push({index:i,start:s.startTime,end:s.endTime,distance:+(s.activity.distanceMeters||0),mode:s.activity.topCandidate?.type||'UNKNOWN',a:ll(s.activity.start?.latLng),b:ll(s.activity.end?.latLng)});
+   if(s.visit){const v=s.visit.topCandidate||{};visits.push({index:i,start:s.startTime,end:s.endTime,id:v.placeId||'Unknown place',type:v.semanticType||'',prob:+(v.probability||0),p:ll(v.placeLocation?.latLng)});}
+   if(Array.isArray(s.timelinePath))for(const p of s.timelinePath){const pt=ll(p?.point);if(pt&&p?.time)pathPoints.push({time:p.time,p:pt});}
  }
- let all=[...g.values()].sort((x,y)=>y.sec-x.sec);
- const q=($("placeSearch")?.value||"").trim().toLowerCase();
- if(q) all=all.filter(x=>(x.label+" "+(x.id||"")+" "+(x.p?x.p.join(" "):"")).toLowerCase().includes(q));
- const shown=Math.min(placesShown,all.length);
- let html=all.slice(0,shown).map((x,i)=>{
-   const safe=encodeURIComponent(x.key);
-   const coords=x.p?`<div class="placehint">📍 ${x.p[0].toFixed(5)}, ${x.p[1].toFixed(5)}</div>`:"<div class='placehint'>📍 No coordinates in export</div>";
-   const maps=x.p?`<a href="https://www.google.com/maps/search/?api=1&query=${x.p[0]},${x.p[1]}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open in Maps</a>`:"";
-   return `<div class="item clickable" onclick="showPlace('${safe}')" title="Tap to show this place on the TT map"><strong>${i+1}. ${esc(x.label)}</strong><br><span class="pill">⏱️ ${dur(x.sec)}</span><span class="pill">${x.count} visit${x.count==1?"":"s"}</span>${coords}<div class="placehint">🗺️ Tap to show on TT map ${maps?"• "+maps:""}</div></div>`;
- }).join("");
- if(!html) html="<span class='muted'>No visits in this date range.</span>";
- if(all.length>shown) html+=`<button class="smallbtn morebtn" onclick="showMorePlaces()">Show more (${all.length-shown} more)</button>`;
- else if(all.length>5) html+=`<button class="smallbtn morebtn" onclick="showLessPlaces()">Show less</button>`;
- $("places").innerHTML=html;
+ pathPoints.sort((a,b)=>Date.parse(a.time)-Date.parse(b.time));pathTimesCache=pathPoints.map(x=>Date.parse(x.time));
+ const times=segments.flatMap(s=>[s?.startTime,s?.endTime]).filter(Boolean).sort((a,b)=>Date.parse(a)-Date.parse(b));if(!times.length)throw new Error('No dated semantic segments were found in this JSON.');
+ const lo=datePart(times[0]),hi=datePart(times[times.length-1]);const ids=new Set(visits.map(v=>v.id).filter(id=>id&&id!=='Unknown place'));integrityInfo={segments:segments.length,activities:activities.length,visits:visits.length,pathSegments:segments.filter(s=>Array.isArray(s?.timelinePath)).length,points:pathPoints.length,places:ids.size};
+ $('coverage').innerHTML='<b>'+new Date(times[0]).toLocaleString()+'</b> → <b>'+new Date(times[times.length-1]).toLocaleString()+'</b><br><span class="muted">'+segments.length.toLocaleString()+' segments · '+activities.length.toLocaleString()+' activities · '+visits.length.toLocaleString()+' visits · '+pathPoints.length.toLocaleString()+' timeline GPS points</span>';
+ $('from').min=lo;$('from').max=hi;$('from').value=lo;$('to').min=lo;$('to').max=hi;$('to').value=hi;$('dashboard').classList.remove('hidden');placesShown=5;routesShown=5;selectedPlace=null;selectedRoute=null;renderIntegrity();initMap();render();
 }
-function renderRoutes(acts){
- const g=new Map();
- for(const x of acts){const k=routeKey(x.a,x.b);if(!k)continue;if(!g.has(k))g.set(k,{key:k,count:0,dist:0,mode:x.mode,a:x.a,b:x.b});const q=g.get(k);q.count++;q.dist+=x.distance}
- const all=[...g.values()].sort((x,y)=>y.count-x.count);
- const a=all.slice(0,routesShown);
- let html=a.length?a.map((x,i)=>{const safe=encodeURIComponent(x.key);return `<div class="item"><strong>${i+1}. ${esc(x.key)}</strong><br><span class="pill">🔁 ${x.count} trips</span><span class="pill">🛣️ ${(x.dist/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km</span><span class="pill">${mode(x.mode)}</span><br><button class="smallbtn" onclick="highlight('${safe}')">Highlight</button> <button class="smallbtn" onclick="nameTrip('${safe}')">Name this trip</button></div>`}).join(""):"<span class='muted'>No repeated routes could be identified.</span>";
- if(all.length>routesShown) html+=`<button class="smallbtn morebtn" onclick="showMoreRoutes()">Show more (${all.length-routesShown} more)</button>`;
- else if(all.length>5) html+=`<button class="smallbtn morebtn" onclick="showLessRoutes()">Show less</button>`;
- $("routes").innerHTML=html;
+function renderIntegrity(){if(!integrityInfo)return;$('integrity').innerHTML='<div class="notice"><b>✅ Timeline loaded and parsed</b><br>'+integrityInfo.segments.toLocaleString()+' segments · '+integrityInfo.activities.toLocaleString()+' activities · '+integrityInfo.visits.toLocaleString()+' visits · '+integrityInfo.places.toLocaleString()+' unique Place IDs · '+integrityInfo.points.toLocaleString()+' GPS points</div>'}
+function initMap(){if(map)return;map=L.map('map',{preferCanvas:true}).setView([20.6,78.9],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);routeLayer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map)}
+function render(){if(!data)return;const f=$('from').value,t=$('to').value;if(!f||!t||f>t)return;const acts=activities.filter(x=>inRange(x.start,x.end,f,t)),vs=visits.filter(x=>inRange(x.start,x.end,f,t));const km=acts.reduce((s,x)=>s+x.distance,0)/1000,sec=acts.reduce((s,x)=>s+overlapSeconds(x.start,x.end,f,t),0);$('distance').textContent=km.toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('journeys').textContent=acts.length.toLocaleString();$('travelTime').textContent=formatDuration(sec);$('placeCount').textContent=uniquePlaceCount(vs).toLocaleString();const fp=+$('fuelPrice').value||0,mi=+$('mileage').value||0;$('fuel').textContent=mi?`Estimated fuel: ${(km/mi).toLocaleString(undefined,{maximumFractionDigits:2})} L • Cost: ₹${(km/mi*fp).toLocaleString(undefined,{maximumFractionDigits:2})} • ₹${(fp/mi).toLocaleString(undefined,{maximumFractionDigits:2})}/km`:'Enter mileage';renderPlaces(vs,f,t);renderRoutes(acts);renderNamed(f,t);drawMap(acts,f,t)}
+function buildPlaces(vs,f,t){const g=new Map();for(const v of vs){const key=v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown');if(!g.has(key))g.set(key,{key,id:v.id,label:placeLabel(v),type:v.type,sec:0,count:0,p:v.p,prob:v.prob});const x=g.get(key);x.sec+=overlapSeconds(v.start,v.end,f,t);x.count++;if(!x.p&&v.p)x.p=v.p;if(v.type&&!x.type)x.type=v.type}return[...g.values()].sort((a,b)=>b.sec-a.sec)}
+function renderPlaces(vs,f,t){let all=buildPlaces(vs,f,t);const q=($('placeSearch').value||'').trim().toLowerCase();if(q)all=all.filter(x=>(x.label+' '+(x.id||'')+' '+(x.p?x.p.join(' '):'')+' '+(x.type||'')).toLowerCase().includes(q));const shown=Math.min(placesShown,all.length);$('placeCountLabel').textContent=q?`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} matching places`:`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} places`;let html=all.slice(0,shown).map((x,i)=>{const safe=encodeURIComponent(x.key),id=x.id&&x.id!=='Unknown place'?esc(x.id):'No Place ID',coords=x.p?`<div class="placehint">📍 ${x.p[0].toFixed(6)}, ${x.p[1].toFixed(6)}</div>`:'<div class="placehint">📍 No coordinates in export</div>',maps=x.p?`<a class="linkbtn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${x.p[0]},${x.p[1]}${x.id&&x.id!=="Unknown place"?'&query_place_id='+encodeURIComponent(x.id):''}">Open in Google Maps</a>`:'';return`<div class="item"><strong>${i+1}. ${esc(x.label)}</strong><br><span class="pill">⏱️ ${formatDuration(x.sec)}</span><span class="pill">${x.count} visit${x.count===1?'':'s'}</span>${x.type?'<span class="pill">'+esc(x.type)+'</span>':''}${coords}<div class="placehint">🆔 ${id}</div><div class="item-actions"><button class="smallbtn" onclick="showPlace('${safe}')">🗺️ Show on TT map</button>${maps}<button class="secondary smallbtn" onclick="copyPlaceId('${encodeURIComponent(x.id||'')}')">📋 Copy Place ID</button></div></div>`}).join('');if(!html)html='<div class="empty muted">No places match this date range/search.</div>';if(all.length>shown)html+=`<button class="smallbtn" onclick="showMorePlaces()">Show more (${(all.length-shown).toLocaleString()} more)</button>`;else if(all.length>5&&!q)html+='<button class="smallbtn" onclick="showLessPlaces()">Show less</button>';$('places').innerHTML=html}
+function buildRoutes(acts){const g=new Map();for(const x of acts){const k=routeKey(x.a,x.b);if(!k)continue;if(!g.has(k))g.set(k,{key:k,count:0,dist:0,mode:x.mode});const q=g.get(k);q.count++;q.dist+=x.distance}return[...g.values()].sort((a,b)=>b.count-a.count||b.dist-a.dist)}
+function renderRoutes(acts){const all=buildRoutes(acts),shown=Math.min(routesShown,all.length);$('routeCountLabel').textContent=`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} grouped routes`;let html=all.slice(0,shown).map((x,i)=>{const safe=encodeURIComponent(x.key);return`<div class="item"><strong>${i+1}. ${esc(x.key)}</strong><br><span class="pill">🔁 ${x.count} trips</span><span class="pill">🛣️ ${(x.dist/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km</span><span class="pill">${mode(x.mode)}</span><div class="item-actions"><button class="smallbtn" onclick="highlightRoute('${safe}')">🗺️ Highlight on map</button><button class="smallbtn" onclick="nameTrip('${safe}')">🏷️ Name this trip</button></div></div>`}).join('');if(!html)html='<div class="empty muted">No journeys with usable start/end coordinates were found for this date range.</div>';if(all.length>shown)html+=`<button class="smallbtn" onclick="showMoreRoutes()">Show more (${(all.length-shown).toLocaleString()} more)</button>`;else if(all.length>5)html+='<button class="smallbtn" onclick="showLessRoutes()">Show less</button>';$('routes').innerHTML=html}
+function showMorePlaces(){placesShown+=5;render()}function showLessPlaces(){placesShown=5;render()}function showMoreRoutes(){routesShown+=5;render()}function showLessRoutes(){routesShown=5;render()}
+function copyPlaceId(encoded){const text=decodeURIComponent(encoded);if(!text)return;navigator.clipboard?.writeText(text).then(()=>{$('mapStatus').textContent='Place ID copied.'}).catch(()=>{$('mapStatus').textContent='Place ID: '+text})}
+function showPlace(encoded){const key=decodeURIComponent(encoded),f=$('from').value,t=$('to').value,vs=visits.filter(v=>{const k=v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown');return k===key&&inRange(v.start,v.end,f,t)}),p=vs.find(v=>v.p)?.p;if(!p){$('mapStatus').textContent='This place has no coordinates in the exported Timeline data.';return}selectedPlace={key,p,label:placeLabel(vs[0]),id:vs[0]?.id||'',visits:vs.length};selectedRoute=null;drawMap(activities.filter(x=>inRange(x.start,x.end,f,t)),f,t);map.setView(p,15);L.popup().setLatLng(p).setContent('<b>📍 '+esc(selectedPlace.label)+'</b><br>Visits in range: '+vs.length).openOn(map);$('mapStatus').textContent='Selected place: '+selectedPlace.label+' · '+p[0].toFixed(6)+', '+p[1].toFixed(6)}
+function highlightRoute(encoded){selectedRoute=decodeURIComponent(encoded);selectedPlace=null;const f=$('from').value,t=$('to').value;drawMap(activities.filter(x=>inRange(x.start,x.end,f,t)),f,t)}
+function clearSelection(){selectedRoute=null;selectedPlace=null;const f=$('from').value,t=$('to').value;drawMap(activities.filter(x=>inRange(x.start,x.end,f,t)),f,t)}
+function nameTrip(encoded){const k=decodeURIComponent(encoded),old=localStorage.getItem('tt-name-'+k)||'',n=prompt('Name this regular trip:',old);if(n===null)return;if(n.trim())localStorage.setItem('tt-name-'+k,n.trim());renderNamed($('from').value,$('to').value)}
+function renderNamed(f,t){const names=Object.keys(localStorage).filter(k=>k.startsWith('tt-name-')).map(k=>({key:k.slice(8),name:localStorage.getItem(k)}));$('named').innerHTML=names.length?names.map(x=>{const a=activities.filter(q=>routeKey(q.a,q.b)===x.key&&inRange(q.start,q.end,f,t));const km=a.reduce((s,q)=>s+q.distance,0)/1000;return`<div class="item"><strong>🏷️ ${esc(x.name)}</strong><br><span class="pill">${a.length} trips in selected range</span><span class="pill">${km.toFixed(1)} km</span><div class="item-actions"><button class="danger smallbtn" onclick="removeTrip('${encodeURIComponent(x.key)}')">Remove name</button></div></div>`}).join(''):'<span class="muted">No named trips yet. Name a repeated route above.</span>'}
+function removeTrip(e){localStorage.removeItem('tt-name-'+decodeURIComponent(e));renderNamed($('from').value,$('to').value)}
+function lowerBound(arr,target){let lo=0,hi=arr.length;while(lo<hi){const m=(lo+hi)>>1;if(arr[m]<target)lo=m+1;else hi=m}return lo}
+function drawOverviewPath(f,t){
+  const a=lowerBound(pathTimesCache,rangeStart(f)),b=lowerBound(pathTimesCache,rangeEnd(t)+1);
+  const pts=pathPoints.slice(a,b);if(pts.length<2)return {lines:0,points:0,bounds:[]};
+  const bounds=[],chunks=[];let cur=[pts[0].p];
+  for(let i=1;i<pts.length;i++){
+    const gap=Date.parse(pts[i].time)-Date.parse(pts[i-1].time);
+    if(gap>10*60*1000){if(cur.length>=2)chunks.push(cur);cur=[pts[i].p]}else cur.push(pts[i].p);
+  }
+  if(cur.length>=2)chunks.push(cur);
+  for(const chunk of chunks){L.polyline(chunk,{weight:3,opacity:.55}).addTo(routeLayer);bounds.push(chunk[0],chunk[chunk.length-1])}
+  return {lines:chunks.length,points:pts.length,bounds};
 }
-function showMorePlaces(){placesShown+=5;render();}
-function showLessPlaces(){placesShown=5;render();}
-function showMoreRoutes(){routesShown+=5;render();}
-function showLessRoutes(){routesShown=5;render();}
-function showPlace(encoded){
- const key=decodeURIComponent(encoded), f=$("from").value,t=$("to").value;
- const vs=visits.filter(v=>{const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");return k===key&&inRange(v.start,v.end,f,t)});
- const p=vs.find(v=>v.p)?.p;
- if(!p){$("mapStatus").textContent="This place has no coordinates in the exported Timeline data.";return;}
- selectedPlace={key,p,label:placeLabel(vs[0])};
- selectedRoute=null;
- const acts=activities.filter(x=>inRange(x.start,x.end,f,t));
- drawMap(acts,f,t);
- if(map){map.setView(p,15); L.popup().setLatLng(p).setContent("<b>📍 "+esc(selectedPlace.label)+"</b><br>Visits: "+vs.length).openOn(map);}
+function drawActivityLines(acts,chosen,place){
+  let lines=0,points=0,bounds=[];
+  for(const a of acts){
+    if(chosen&&routeKey(a.a,a.b)!==chosen)continue;
+    if(place&&(haversine(place.p,a.a)>2&&haversine(place.p,a.b)>2))continue;
+    const ia=lowerBound(pathTimesCache,Date.parse(a.start)-120000),ib=lowerBound(pathTimesCache,Date.parse(a.end)+120000),pts=pathPoints.slice(ia,ib).map(x=>x.p);
+    const line=pts.length>=2?pts:(a.a&&a.b?[a.a,a.b]:[]);
+    if(line.length>=2){L.polyline(line,{weight:chosen?5:2,opacity:chosen?.85:.35}).addTo(routeLayer);lines++;points+=line.length;bounds.push(line[0],line[line.length-1])}
+  }
+  return {lines,points,bounds};
 }
-function highlight(encoded){selectedRoute=decodeURIComponent(encoded);drawMap(activities.filter(x=>inRange(x.start,x.end,$("from").value,$("to").value)),$("from").value,$("to").value)}
-function nameTrip(encoded){const k=decodeURIComponent(encoded);const old=localStorage.getItem("tt-name-"+k)||"";const n=prompt("Name this regular trip:",old);if(n===null)return;if(n.trim())localStorage.setItem("tt-name-"+k,n.trim());renderNamed($("from").value,$("to").value)}
-function renderNamed(f,t){
- const names=Object.keys(localStorage).filter(k=>k.startsWith("tt-name-")).map(k=>({key:k.slice(8),name:localStorage.getItem(k)}));
- $("named").innerHTML=names.length?names.map(x=>{const a=activities.filter(q=>routeKey(q.a,q.b)===x.key&&inRange(q.start,q.end,f,t));const km=a.reduce((s,q)=>s+q.distance,0)/1000;return `<div class="item"><strong>🏷️ ${esc(x.name)}</strong><br><span class="pill">${a.length} trips in selected range</span><span class="pill">${km.toFixed(1)} km</span><br><button class="danger smallbtn" onclick="removeTrip('${encodeURIComponent(x.key)}')">Remove name</button></div>`}).join(""):"<span class='muted'>No named trips yet. Name a repeated route above.</span>";
-}
-function openHelp(){$("helpModal").classList.remove("hidden")}
-function closeHelp(){$("helpModal").classList.add("hidden");localStorage.setItem("tt-help-seen","1")}
-$("helpModal").addEventListener("click",e=>{if(e.target.id==="helpModal")closeHelp()});
-if(!localStorage.getItem("tt-help-seen"))openHelp();
-function removeTrip(e){localStorage.removeItem("tt-name-"+decodeURIComponent(e));renderNamed($("from").value,$("to").value)}
 function drawMap(acts,f,t){
- routeLayer.clearLayers();markerLayer.clearLayers();let all=[];let lines=0;let points=0;
- const chosen=selectedRoute;
- const place=selectedPlace;
- for(const a of acts){
-   if(chosen&&routeKey(a.a,a.b)!==chosen)continue;
-   if(place){
-     const near=p=>p&&Math.abs(p[0]-place.p[0])<0.02&&Math.abs(p[1]-place.p[1])<0.02;
-     if(!near(a.a)&&!near(a.b))continue;
-   }
-   const pts=pathPoints.filter(p=>p.time&&Date.parse(p.time)>=Date.parse(a.start)-120000&&Date.parse(p.time)<=Date.parse(a.end)+120000).map(x=>x.p);
-   const line=pts.length>=2?pts:(a.a&&a.b?[a.a,a.b]:[]);
-   if(line.length>=2){L.polyline(line,{weight:chosen?6:3,opacity:chosen?.8:.35}).addTo(routeLayer);all.push(...line);lines++;points+=line.length}
-   if(a.a)L.circleMarker(a.a,{radius:4}).addTo(markerLayer);
-   if(a.b)L.circleMarker(a.b,{radius:4}).addTo(markerLayer);
- }
- if(place){const pm=L.marker(place.p).addTo(markerLayer).bindPopup("<b>📍 "+esc(place.label)+"</b><br>Nearby journeys are highlighted.");all.push(place.p);pm.openPopup();}
- if(all.length){map.fitBounds(L.latLngBounds(all),{padding:[20,20],maxZoom:15})}
- $("mapStatus").textContent=lines?`${lines.toLocaleString()} route lines • ${points.toLocaleString()} GPS points shown${chosen?" • highlighted route":""}`:"No GPS route points were found for this date range.";
+  if(!map)return;routeLayer.clearLayers();markerLayer.clearLayers();
+  const chosen=selectedRoute,place=selectedPlace;let result;
+  if(!chosen&&!place) result=drawOverviewPath(f,t); else result=drawActivityLines(acts,chosen,place);
+  let allBounds=result.bounds.slice();
+  if(chosen){
+    for(const a of acts){if(routeKey(a.a,a.b)!==chosen)continue;if(a.a)allBounds.push(a.a);if(a.b)allBounds.push(a.b)}
+  }
+  if(place){const pm=L.marker(place.p).addTo(markerLayer).bindPopup('<b>📍 '+esc(place.label)+'</b><br>Visits in range: '+place.visits);pm.openPopup();allBounds.push(place.p)}
+  if(allBounds.length){map.fitBounds(L.latLngBounds(allBounds),{padding:[20,20],maxZoom:place?15:(chosen?14:13)})}
+  $('mapStatus').textContent=result.lines?`${result.lines.toLocaleString()} route lines • ${result.points.toLocaleString()} GPS points${chosen?' • highlighted route':''}${place?' • selected place':''}`:'No GPS path lines were found for this date range. Try a route/place selection for a more focused view.';
 }
-$("file").addEventListener("change",e=>{const file=e.target.files[0];if(!file)return;$("status").textContent="Reading "+file.name+"…";const r=new FileReader();r.onload=()=>{try{parse(JSON.parse(r.result));$("status").textContent="Loaded successfully. Your JSON stays in this browser tab."}catch(err){$("status").textContent="Could not read this JSON file. Please choose the Google Maps Timeline export."}};r.readAsText(file)});
-["from","to","fuelPrice","mileage"].forEach(id=>$(id).addEventListener("input",()=>{selectedRoute=null;selectedPlace=null;placesShown=5;routesShown=5;render()}));
-$("placeSearch").addEventListener("input",()=>{placesShown=5;render()});
-$("latest").onclick=()=>{const hi=$("to").max;$("from").value=hi;$("to").value=hi;selectedRoute=null;selectedPlace=null;render()};
-$("allDates").onclick=()=>{ $("from").value=$("from").min;$("to").value=$("to").max;selectedRoute=null;selectedPlace=null;render()};
-$("clear").onclick=()=>{data=null;segments=[];activities=[];visits=[];pathPoints=[];$("dashboard").classList.add("hidden");$("file").value="";$("status").textContent="Imported data cleared."};
-$("reminderBtn").onclick=async()=>{if(!("Notification" in window)){$("reminderStatus").textContent="This browser does not support notifications.";return}const p=await Notification.requestPermission();if(p==="granted"){$("reminderStatus").textContent="Notifications allowed for "+$("reminderTime").value+". Web browsers may not deliver an exact daily background notification; native Android is more reliable."}else $("reminderStatus").textContent="Notification permission was not granted."};
-if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+function resetMap(){clearSelection()}
+function scheduleReminder(){if(reminderTimer)clearTimeout(reminderTimer);reminderTimer=null;if(Notification.permission!=='granted')return;const [hh,mm]=$('reminderTime').value.split(':').map(Number);if(!Number.isFinite(hh)||!Number.isFinite(mm))return;const now=new Date(),next=new Date(now);next.setHours(hh,mm,0,0);if(next<=now)next.setDate(next.getDate()+1);reminderTimer=setTimeout(()=>{try{new Notification('Timeline-Teller',{body:"Here's where you traveled today."})}catch{}scheduleReminder()},Math.max(1000,next-now))}
+function openHelp(){$('helpModal').classList.remove('hidden')}function closeHelp(){$('helpModal').classList.add('hidden');localStorage.setItem('tt-help-seen-v2','1')}
+$('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});if(!localStorage.getItem('tt-help-seen-v2'))openHelp();
+$('file').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;$('status').textContent='Reading '+file.name+'…';$('loadProgress').classList.remove('hidden');$('loadProgress').firstElementChild.style.width='10%';const r=new FileReader();r.onprogress=ev=>{if(ev.lengthComputable)$('loadProgress').firstElementChild.style.width=Math.max(10,Math.round(ev.loaded/ev.total*75))+'%'};r.onload=()=>{try{$('loadProgress').firstElementChild.style.width='90%';parseTimeline(JSON.parse(r.result));$('loadProgress').firstElementChild.style.width='100%';$('status').innerHTML='<span class="ok">Loaded successfully. Your JSON stays in this browser tab.</span>';setTimeout(()=>$('loadProgress').classList.add('hidden'),500)}catch(err){$('status').textContent='Could not read this Timeline JSON: '+(err?.message||'invalid JSON');$('loadProgress').classList.add('hidden')}};r.readAsText(file)});
+['from','to','fuelPrice','mileage'].forEach(id=>$(id).addEventListener('input',()=>{selectedRoute=null;selectedPlace=null;placesShown=5;routesShown=5;render()}));$('placeSearch').addEventListener('input',()=>{placesShown=5;render()});$('clearPlaceSearch').onclick=()=>{$('placeSearch').value='';placesShown=5;render()};
+$('latest').onclick=()=>{const hi=$('to').max||$('to').value;$('from').value=hi;$('to').value=hi;clearSelection()};$('allDates').onclick=()=>{$('from').value=$('from').min;$('to').value=$('to').max;clearSelection()};$('resetMap').onclick=resetMap;$('clearSelection').onclick=clearSelection;
+$('clear').onclick=()=>{data=null;segments=[];activities=[];visits=[];pathPoints=[];pathTimesCache=[];selectedRoute=null;selectedPlace=null;integrityInfo=null;$('dashboard').classList.add('hidden');$('file').value='';$('status').textContent='Imported data cleared.';if(map){routeLayer.clearLayers();markerLayer.clearLayers()}};
+$('reminderTime').addEventListener('change',()=>{localStorage.setItem('tt-reminder-time',$('reminderTime').value);if(Notification.permission==='granted')scheduleReminder()});const savedReminder=localStorage.getItem('tt-reminder-time');if(savedReminder)$('reminderTime').value=savedReminder;
+$('reminderBtn').onclick=async()=>{if(!('Notification'in window)){$('reminderStatus').textContent='This browser does not support notifications.';return}const p=await Notification.requestPermission();if(p==='granted'){localStorage.setItem('tt-reminder-time',$('reminderTime').value);scheduleReminder();$('reminderStatus').textContent='Reminder enabled for '+$('reminderTime').value+'. Android/browser behavior may still limit background delivery; a native APK is more reliable.'}else $('reminderStatus').textContent='Notification permission was not granted.'};
+if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&!sessionStorage.getItem('tt-sw-refresh-v2')){sessionStorage.setItem('tt-sw-refresh-v2','1');location.reload()}})})}).catch(()=>{})})}
 </script>
-</body>
-</html>
+</body></html>
