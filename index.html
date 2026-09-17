@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111827">
-<title>Timeline-Teller V2.1</title>
+<title>Timeline Analyzer V2.2</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
@@ -24,37 +24,90 @@ button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827
 .gear-icon{color:#D2042D;font-size:28px;display:inline-block;margin-right:6px;vertical-align:-3px}.by-dinesh{text-align:center;font-weight:800;color:#D2042D;font-size:16px;margin:-4px 0 12px}
 .modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;z-index:3000}.modal.hidden{display:none}.modalbox{background:#fff;border-radius:18px;max-width:540px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:0 12px 40px #0005}.modalbox h2{margin-top:0}.modalbox ol{padding-left:22px}.modalbox li{margin:9px 0}.modalbox .close{width:100%;margin-top:12px}
 @media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two-col .card{margin:0}}
+
+/* Timeline Analyzer V2.2 visual system */
+:root{--navy:#0f172a;--navy-2:#111c34;--slate:#475569;--muted:#64748b;--line:#e2e8f0;--surface:#ffffff;--soft:#f8fafc;--accent:#d2042d;--accent-2:#b51f42;--accent-soft:#fff1f3;--blue-soft:#eef5ff;--shadow:0 12px 34px rgba(15,23,42,.07)}
+body{background:linear-gradient(180deg,#f8fafc 0%,#f3f4f6 100%);color:#0f172a;letter-spacing:.01em}
+.app-header{background:linear-gradient(135deg,#0b1224 0%,#111c34 62%,#16213d 100%);padding:0;position:sticky;top:0;z-index:1000;box-shadow:0 8px 30px rgba(2,6,23,.18)}
+.header-inner{max-width:1100px;margin:auto;padding:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand-wrap{display:flex;align-items:center;gap:12px;min-width:0}.brand-mark{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:25px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)}
+.brand-copy{min-width:0}.brand-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.brand-title-row h1{font-size:23px;line-height:1.05;letter-spacing:-.02em}.version-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.12);color:#e2e8f0;font-size:10px;font-weight:800;letter-spacing:.08em}.version-badge.dark{background:#e2e8f0;color:#0f172a}.sub{color:#cbd5e1;font-size:13px;margin-top:5px}.header-badge{font-size:11px;font-weight:800;color:#e2e8f0;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 10px;white-space:nowrap}
+main{max-width:1100px;padding:16px}.card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.9);border-radius:20px;padding:18px;margin:14px 0;box-shadow:var(--shadow)}.card h2{font-size:19px;letter-spacing:-.02em;margin:0 0 10px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.14em;color:#94a3b8;margin-bottom:7px}.import-card{padding:20px;background:linear-gradient(135deg,#fff 0%,#fffafb 100%);border-color:#f3d9df}.import-card h2{font-size:22px}.import-card .muted{max-width:760px;line-height:1.55}
+.toolbar{margin-top:14px}.filebtn{background:var(--navy);padding:12px 15px;border-radius:12px;box-shadow:0 8px 18px rgba(15,23,42,.14)}button,.filebtn{transition:transform .16s ease,box-shadow .16s ease,background .16s ease}.filebtn:hover,button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,23,42,.12)}button{background:var(--navy)}.secondary{background:#e2e8f0;color:#0f172a}.success{background:#166534}.danger{background:#b91c1c}.primary-cta{background:var(--accent);box-shadow:0 8px 18px rgba(210,4,45,.2)}
+.notice{background:linear-gradient(135deg,#eff6ff,#f8fbff);border-color:#bfdbfe;border-radius:14px;padding:13px 14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55)}
+.stats{gap:12px}.stat{background:linear-gradient(180deg,#fbfdff,#f8fafc);border:1px solid #e9eef5;border-radius:15px;padding:14px}.stat span{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.stat b{font-size:23px;letter-spacing:-.02em}
+input,select{border:1px solid #dbe3ec;border-radius:12px;padding:11px 12px;outline:none;transition:border-color .16s ease,box-shadow .16s ease}input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.18)}
+.item{border:1px solid #e7ecf2;border-radius:15px;padding:13px;background:#fff}.item strong{font-size:15px}.pill{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;padding:5px 8px}.linkbtn{background:#f1f5f9;color:#0f172a;border:1px solid #e2e8f0}.selected-note{background:var(--accent-soft);color:#9f1239;border:1px solid #fecdd3}
+.place-name-row button{background:#166534}.countbar{margin:10px 0 11px}.searchrow input{background:#fbfdff}
+#map{height:440px;border-radius:16px;border:1px solid #e2e8f0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}.map-card{overflow:hidden}.maptools{margin-top:10px}
+.gear-icon{color:var(--accent);font-size:34px;display:inline-block;filter:drop-shadow(0 3px 8px rgba(210,4,45,.18))}.by-dinesh{text-align:center;font-weight:900;color:var(--accent);font-size:16px;margin:2px 0 2px;letter-spacing:.03em}.welcome-box{max-width:620px;padding:0;overflow:hidden;border:1px solid #eef1f5;box-shadow:0 20px 60px rgba(2,6,23,.25)}.welcome-top{padding:24px 22px 18px;background:linear-gradient(180deg,#fbfcff 0%,#fff 100%);text-align:center;border-bottom:1px solid #edf1f5}.welcome-gear{color:var(--accent);font-size:52px;line-height:1;filter:drop-shadow(0 4px 12px rgba(210,4,45,.18));margin-bottom:10px}.welcome-brand{font-size:22px;font-weight:900;letter-spacing:-.025em}.welcome-tagline{margin-top:7px;color:#64748b;font-size:14px;font-weight:700}.welcome-copy{margin:0;padding:18px 22px 8px;color:#475569;line-height:1.55;text-align:center}.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 22px 14px}.feature{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#f8fafc;border:1px solid #e8edf3;border-radius:14px;text-align:left}.feature>span{font-size:21px}.feature b{display:block;font-size:13px}.feature small{display:block;color:#64748b;font-size:11px;margin-top:2px}.guide-box{margin:4px 22px 14px;padding:14px;border:1px solid #e8edf3;border-radius:15px;background:#fbfdff}.guide-title{font-size:14px;font-weight:900;margin-bottom:8px}.guide-box ol{margin:0;padding-left:21px}.guide-box li{margin:8px 0;font-size:13px;color:#334155}.guide-note{margin:10px 0 0}.privacy-note{display:flex;gap:10px;align-items:flex-start;margin:0 22px 16px;padding:12px 13px;border-radius:14px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;font-size:12px}.privacy-note>span{font-size:18px;line-height:1}.privacy-note div span{color:#476255}.modal{background:rgba(2,6,23,.66);backdrop-filter:blur(4px)}.modalbox .close{margin-top:0}.app-footer{text-align:center;color:#94a3b8;font-size:11px;padding:20px 10px 10px}
+@media(max-width:699px){.header-inner{align-items:flex-start}.header-badge{display:none}.brand-mark{width:42px;height:42px;font-size:22px}.brand-title-row h1{font-size:21px}.stats{grid-template-columns:1fr 1fr}.feature-grid{grid-template-columns:1fr}.welcome-box{max-height:92vh}.welcome-copy{font-size:13px}.app-footer{padding-bottom:24px}}
 </style>
 </head>
 <body>
-<header><h1>🗺️ Timeline-Teller</h1><div class="sub">Your personal travel history analyzer · V2.1</div></header>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand-wrap">
+      <div class="brand-mark" aria-hidden="true">🗺️</div>
+      <div class="brand-copy">
+        <div class="brand-title-row"><h1>Timeline Analyzer</h1><span class="version-badge">V2.2</span></div>
+        <div class="sub">Understand where you've been.</div>
+      </div>
+    </div>
+    <div class="header-badge">🔒 Private · Local processing</div>
+  </div>
+</header>
 <main>
-<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle"><div class="modalbox">
-<div style="text-align:center"><span class="gear-icon" aria-hidden="true">⚙</span></div><h2 id="helpTitle" style="text-align:center">📥 How to export Timeline.json</h2><div class="by-dinesh">By Dinesh</div>
-<p class="muted">TT uses the Google Maps Timeline export from your Android phone. The file is processed locally in this browser and is not uploaded to GitHub or sent to TT.</p>
-<ol><li>Open your phone's <b>Settings</b>.</li><li>Tap <b>Location</b> → <b>Location services</b> → <b>Timeline</b>.</li><li>Tap <b>Export Timeline data</b>.</li><li>Tap <b>Continue</b>, choose where to save the file, then tap <b>Save</b>.</li><li>Return to Timeline-Teller and tap <b>Choose Timeline.json</b>.</li></ol>
-<p class="muted">Google's menu names can vary slightly by Android phone/version.</p><button class="close" onclick="closeHelp()">Got it</button>
-</div></div>
-<section class="card"><h2>📥 Import your Google Maps Timeline</h2><p class="muted">Choose your exported <b>Timeline.json</b>. TT processes the file locally in your browser; it is never uploaded to this GitHub site.</p>
-<div class="toolbar"><label class="filebtn">📂 Choose Timeline.json<input id="file" class="fileinput" type="file" accept=".json,application/json"></label><button class="secondary smallbtn" onclick="openHelp()">❓ How to get JSON</button></div>
+<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+  <div class="modalbox welcome-box">
+    <div class="welcome-top">
+      <div class="welcome-gear" aria-hidden="true">⚙</div>
+      <div class="welcome-brand">Timeline Analyzer <span class="version-badge dark">V2.2</span></div>
+      <div class="by-dinesh">By Dinesh</div>
+      <div class="welcome-tagline">Understand where you've been.</div>
+    </div>
+    <p class="welcome-copy">Turn your exported Google Maps Timeline into a private, personal travel dashboard — with distance, places, repeated journeys, fuel estimates and maps.</p>
+    <div class="feature-grid">
+      <div class="feature"><span>📊</span><div><b>Deep insights</b><small>Analyze your full history</small></div></div>
+      <div class="feature"><span>📍</span><div><b>Places & stays</b><small>See where time was spent</small></div></div>
+      <div class="feature"><span>🔁</span><div><b>Repeated journeys</b><small>Find your regular routes</small></div></div>
+      <div class="feature"><span>🗺️</span><div><b>Map view</b><small>Explore paths visually</small></div></div>
+    </div>
+    <div class="guide-box">
+      <div class="guide-title" id="helpTitle">📥 How to get Timeline.json</div>
+      <ol>
+        <li>Open your phone's <b>Settings</b>.</li>
+        <li>Tap <b>Location</b> → <b>Location services</b> → <b>Timeline</b>.</li>
+        <li>Tap <b>Export Timeline data</b>.</li>
+        <li>Tap <b>Continue</b>, choose where to save the file, then tap <b>Save</b>.</li>
+        <li>Return here and tap <b>Choose Timeline.json</b>.</li>
+      </ol>
+      <p class="muted guide-note">Google's menu names can vary slightly by Android phone/version.</p>
+    </div>
+    <div class="privacy-note"><span>🔐</span><div><b>Your data stays local</b><br><span>Timeline Analyzer processes the JSON in this browser. Your Timeline file is not uploaded to this GitHub site.</span></div></div>
+    <button class="close primary-cta" onclick="closeHelp()">Get started&nbsp; →</button>
+  </div>
+</div>
+<section class="card import-card"><div class="eyebrow">PRIVATE TRAVEL ANALYSIS</div><h2>📥 Import your Google Maps Timeline</h2><p class="muted">Choose your exported <b>Timeline.json</b>. Timeline Analyzer processes the file locally in your browser; it is never uploaded to this GitHub site.</p>
+<div class="toolbar"><label class="filebtn">📂 Choose Timeline.json<input id="file" class="fileinput" type="file" accept=".json,application/json"></label><button class="secondary smallbtn" onclick="openHelp()">❓ Timeline.json guide</button></div>
 <div id="loadProgress" class="progress hidden"><div></div></div><p id="status" class="muted"></p></section>
 <section id="dashboard" class="hidden">
 <div id="integrity" class="card"></div>
 <div class="card"><h2>📅 Data coverage</h2><div id="coverage"></div></div>
-<div class="card"><h2>🔎 Analyze a date range</h2><div class="row"><div class="field"><label>From</label><input id="from" type="date"></div><div class="field"><label>To</label><input id="to" type="date"></div></div><div style="margin-top:10px" class="row"><button id="latest" class="secondary">Latest day</button><button id="allDates" class="secondary">Entire JSON</button></div></div>
-<div class="card"><h2>📊 Summary</h2><div class="stats"><div class="stat"><span>Total distance</span><b id="distance">0 km</b></div><div class="stat"><span>Journeys</span><b id="journeys">0</b></div><div class="stat"><span>Travel time</span><b id="travelTime">0m</b></div><div class="stat"><span>Places</span><b id="placeCount">0</b></div></div></div>
-<div class="two-col"><div class="card"><h2>⛽ Fuel calculator</h2><div class="row"><div class="field"><label>Fuel price (₹/L)</label><input id="fuelPrice" type="number" value="70" min="0" step="0.01"></div><div class="field"><label>Mileage (km/L)</label><input id="mileage" type="number" value="40" min="0.1" step="0.1"></div></div><p id="fuel" style="font-weight:700"></p></div>
-<div class="card"><h2>🔔 Daily reminder</h2><div class="row"><div class="field"><label>Reminder time</label><input id="reminderTime" type="time" value="21:00"></div><div class="field" style="align-self:end"><button id="reminderBtn" class="success">Enable reminder</button></div></div><p id="reminderStatus" class="muted">Browser notifications can be limited in the background on Android. V2 stores the chosen time and schedules a browser timer while the page/app is running; a native Android APK is more reliable for exact daily delivery.</p></div></div>
-<div class="card"><h2>📍 Time spent at places</h2><p class="muted">All distinct Place IDs in the selected range are kept. The Google Timeline JSON normally contains a Place ID and coordinates, not a readable business/home name, so TT does not invent names. Use <b>Open in Google Maps</b> to inspect the corresponding place.</p>
+<div class="card"><div class="eyebrow">FILTER</div><h2>🔎 Analyze a date range</h2><div class="row"><div class="field"><label>From</label><input id="from" type="date"></div><div class="field"><label>To</label><input id="to" type="date"></div></div><div style="margin-top:10px" class="row"><button id="latest" class="secondary">Latest day</button><button id="allDates" class="secondary">Entire JSON</button></div></div>
+<div class="card"><div class="eyebrow">OVERVIEW</div><h2>📊 Summary</h2><div class="stats"><div class="stat"><span>Total distance</span><b id="distance">0 km</b></div><div class="stat"><span>Journeys</span><b id="journeys">0</b></div><div class="stat"><span>Travel time</span><b id="travelTime">0m</b></div><div class="stat"><span>Places</span><b id="placeCount">0</b></div></div></div>
+<div class="two-col"><div class="card tool-card"><div class="eyebrow">TRAVEL COST</div><h2>⛽ Fuel calculator</h2><div class="row"><div class="field"><label>Fuel price (₹/L)</label><input id="fuelPrice" type="number" value="70" min="0" step="0.01"></div><div class="field"><label>Mileage (km/L)</label><input id="mileage" type="number" value="40" min="0.1" step="0.1"></div></div><p id="fuel" style="font-weight:700"></p></div>
+<div class="card tool-card"><div class="eyebrow">DAILY HABIT</div><h2>🔔 Daily reminder</h2><div class="row"><div class="field"><label>Reminder time</label><input id="reminderTime" type="time" value="21:00"></div><div class="field" style="align-self:end"><button id="reminderBtn" class="success">Enable reminder</button></div></div><p id="reminderStatus" class="muted">Browser notifications can be limited in the background on Android. V2 stores the chosen time and schedules a browser timer while the page/app is running; a native Android APK is more reliable for exact daily delivery.</p></div></div>
+<div class="card"><div class="eyebrow">PLACES</div><h2>📍 Time spent at places</h2><p class="muted">All distinct Place IDs in the selected range are kept. The Google Timeline JSON normally contains a Place ID and coordinates, not a readable business/home name, so TT does not invent names. Use <b>Open in Google Maps</b> to inspect the corresponding place.</p>
 <div class="searchrow"><input id="placeSearch" type="search" placeholder="Search Place ID or coordinates"><button id="clearPlaceSearch" class="secondary smallbtn">Clear</button></div><div class="countbar"><span id="placeCountLabel" class="muted"></span><span class="muted">Sorted by time spent</span></div><div id="places" class="list"></div></div>
-<div class="card"><h2>🔁 Repeated journeys</h2><p class="muted">Trips are grouped by rounded start/end GPS points so small GPS differences do not split an otherwise repeated route. Tap a route to highlight its journeys on the map.</p><div class="countbar"><span id="routeCountLabel" class="muted"></span><span class="muted">Sorted by trip count</span></div><div id="routes" class="list"></div></div>
-<div class="card"><h2>🏷️ Named regular trips</h2><div id="named" class="list"></div></div>
-<div class="card"><h2>🗺️ Map</h2><div id="map"></div><div class="maptools"><button id="resetMap" class="secondary smallbtn">Reset map</button><button id="clearSelection" class="secondary smallbtn">Clear selection</button></div><p id="mapStatus" class="muted"></p><p class="muted">Map tiles require internet access. Your Timeline JSON remains local.</p></div>
+<div class="card"><div class="eyebrow">ROUTES</div><h2>🔁 Repeated journeys</h2><p class="muted">Trips are grouped by rounded start/end GPS points so small GPS differences do not split an otherwise repeated route. Tap a route to highlight its journeys on the map.</p><div class="countbar"><span id="routeCountLabel" class="muted"></span><span class="muted">Sorted by trip count</span></div><div id="routes" class="list"></div></div>
+<div class="card"><div class="eyebrow">SAVED NAMES</div><h2>🏷️ Named regular trips</h2><div id="named" class="list"></div></div>
+<div class="card map-card"><div class="eyebrow">VISUALIZE</div><h2>🗺️ Map</h2><div id="map"></div><div class="maptools"><button id="resetMap" class="secondary smallbtn">Reset map</button><button id="clearSelection" class="secondary smallbtn">Clear selection</button></div><p id="mapStatus" class="muted"></p><p class="muted">Map tiles require internet access. Your Timeline JSON remains local.</p></div>
 <div class="card"><button id="clear" class="danger">Clear imported Timeline data</button></div>
-</section></main>
+</section><footer class="app-footer">Timeline Analyzer V2.2 · By Dinesh · Your travel history stays in this browser.</footer></main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const APP_VERSION='2.1.0';
+const APP_VERSION='2.2.0';
 let data=null,segments=[],activities=[],visits=[],pathPoints=[],map=null,routeLayer=null,markerLayer=null,selectedRoute=null,selectedRouteInfo=null,selectedPlace=null,placesShown=5,routesShown=5,integrityInfo=null,reminderTimer=null,pathTimesCache=[];
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -141,15 +194,15 @@ function drawMap(acts,f,t){
   if(chosen){const info=selectedRouteInfo||{};$('mapStatus').innerHTML=`<span class="selected-note">🗺️ Highlighted repeated route · ${Number(info.count||0).toLocaleString()} trips · ${(Number(info.dist||0)/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km · showing one representative path to keep the map clear.</span>`}else $('mapStatus').textContent=result.lines?`${result.lines.toLocaleString()} route lines • ${result.points.toLocaleString()} GPS points${place?' • selected place':''}`:'No GPS path lines were found for this date range. Try a route/place selection for a more focused view.';
 }
 function resetMap(){clearSelection()}
-function scheduleReminder(){if(reminderTimer)clearTimeout(reminderTimer);reminderTimer=null;if(Notification.permission!=='granted')return;const [hh,mm]=$('reminderTime').value.split(':').map(Number);if(!Number.isFinite(hh)||!Number.isFinite(mm))return;const now=new Date(),next=new Date(now);next.setHours(hh,mm,0,0);if(next<=now)next.setDate(next.getDate()+1);reminderTimer=setTimeout(()=>{try{new Notification('Timeline-Teller',{body:"Here's where you traveled today."})}catch{}scheduleReminder()},Math.max(1000,next-now))}
-function openHelp(){$('helpModal').classList.remove('hidden')}function closeHelp(){$('helpModal').classList.add('hidden');localStorage.setItem('tt-help-seen-v2','1')}
-$('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});if(!localStorage.getItem('tt-help-seen-v2'))openHelp();
+function scheduleReminder(){if(reminderTimer)clearTimeout(reminderTimer);reminderTimer=null;if(Notification.permission!=='granted')return;const [hh,mm]=$('reminderTime').value.split(':').map(Number);if(!Number.isFinite(hh)||!Number.isFinite(mm))return;const now=new Date(),next=new Date(now);next.setHours(hh,mm,0,0);if(next<=now)next.setDate(next.getDate()+1);reminderTimer=setTimeout(()=>{try{new Notification('Timeline Analyzer',{body:"Here's where you traveled today."})}catch{}scheduleReminder()},Math.max(1000,next-now))}
+function openHelp(){$('helpModal').classList.remove('hidden')}function closeHelp(){$('helpModal').classList.add('hidden');localStorage.setItem('tt-help-seen-v2.2','1')}
+$('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});if(!localStorage.getItem('tt-help-seen-v2.2'))openHelp();
 $('file').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;$('status').textContent='Reading '+file.name+'…';$('loadProgress').classList.remove('hidden');$('loadProgress').firstElementChild.style.width='10%';const r=new FileReader();r.onprogress=ev=>{if(ev.lengthComputable)$('loadProgress').firstElementChild.style.width=Math.max(10,Math.round(ev.loaded/ev.total*75))+'%'};r.onload=()=>{try{$('loadProgress').firstElementChild.style.width='90%';parseTimeline(JSON.parse(r.result));$('loadProgress').firstElementChild.style.width='100%';$('status').innerHTML='<span class="ok">Loaded successfully. Your JSON stays in this browser tab.</span>';setTimeout(()=>$('loadProgress').classList.add('hidden'),500)}catch(err){$('status').textContent='Could not read this Timeline JSON: '+(err?.message||'invalid JSON');$('loadProgress').classList.add('hidden')}};r.readAsText(file)});
 ['from','to','fuelPrice','mileage'].forEach(id=>$(id).addEventListener('input',()=>{selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;placesShown=5;routesShown=5;render()}));$('placeSearch').addEventListener('input',()=>{placesShown=5;render()});$('clearPlaceSearch').onclick=()=>{$('placeSearch').value='';placesShown=5;render()};
 $('latest').onclick=()=>{const hi=$('to').max||$('to').value;$('from').value=hi;$('to').value=hi;clearSelection()};$('allDates').onclick=()=>{$('from').value=$('from').min;$('to').value=$('to').max;clearSelection()};$('resetMap').onclick=resetMap;$('clearSelection').onclick=clearSelection;
 $('clear').onclick=()=>{data=null;segments=[];activities=[];visits=[];pathPoints=[];pathTimesCache=[];selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;integrityInfo=null;$('dashboard').classList.add('hidden');$('file').value='';$('status').textContent='Imported data cleared.';if(map){routeLayer.clearLayers();markerLayer.clearLayers()}};
 $('reminderTime').addEventListener('change',()=>{localStorage.setItem('tt-reminder-time',$('reminderTime').value);if(Notification.permission==='granted')scheduleReminder()});const savedReminder=localStorage.getItem('tt-reminder-time');if(savedReminder)$('reminderTime').value=savedReminder;
 $('reminderBtn').onclick=async()=>{if(!('Notification'in window)){$('reminderStatus').textContent='This browser does not support notifications.';return}const p=await Notification.requestPermission();if(p==='granted'){localStorage.setItem('tt-reminder-time',$('reminderTime').value);scheduleReminder();$('reminderStatus').textContent='Reminder enabled for '+$('reminderTime').value+'. Android/browser behavior may still limit background delivery; a native APK is more reliable.'}else $('reminderStatus').textContent='Notification permission was not granted.'};
-if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&!sessionStorage.getItem('tt-sw-refresh-v2.1')){sessionStorage.setItem('tt-sw-refresh-v2.1','1');location.reload()}})})}).catch(()=>{})})}
+if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&!sessionStorage.getItem('tt-sw-refresh-v2.2')){sessionStorage.setItem('tt-sw-refresh-v2.2','1');location.reload()}})})}).catch(()=>{})})}
 </script>
 </body></html>

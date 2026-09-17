@@ -1,9 +1,10 @@
 {
-  "name":"Timeline-Teller",
-  "short_name":"TT",
-  "start_url":"./",
-  "display":"standalone",
-  "background_color":"#f3f4f6",
-  "theme_color":"#111827",
-  "description":"Private Google Maps Timeline travel analyzer"
+  "name": "Timeline Analyzer",
+  "short_name": "Timeline Analyzer",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
+  "description": "Private Google Maps Timeline travel history analyzer",
+  "orientation": "portrait-primary"
 }

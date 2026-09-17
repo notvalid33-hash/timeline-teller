@@ -1,19 +1,30 @@
-# Timeline-Teller V1
+Timeline Analyzer V2.2
+=======================
+Understand where you've been.
 
-A privacy-first web/PWA app for analyzing a Google Maps Timeline JSON export.
+Timeline Analyzer is a private, browser-based analyzer for exported Google Maps Timeline JSON data.
 
-Features:
-- Detect first and last date in the JSON
-- Select any date range
-- Total distance, journeys and travel time
-- Time spent at places, aggregated over the selected range
-- Repeated journey detection and counts
-- Map route display and route highlighting
-- Name regular/repeated trips
-- Fuel price + mileage calculator
-- Daily reminder permission UI
-- Local JSON processing; do NOT upload Timeline.json to GitHub
+Privacy
+-------
+The Timeline JSON is processed locally in the browser. It is not uploaded to this GitHub site.
 
-Important:
-- The map uses Leaflet + OpenStreetMap tiles and needs internet access.
-- Browser background notifications are not guaranteed at an exact daily time. A native Android version can provide a more reliable scheduled notification.
+V2.2 highlights
+---------------
+- New app name: Timeline Analyzer
+- Tagline: Understand where you've been.
+- Polished mobile-first UI
+- Cherry-red gear welcome screen + By Dinesh
+- Data coverage, date-range analysis, summary and fuel calculator
+- Places with custom names, search and map actions
+- Repeated journey grouping and selected-route map highlight
+- Browser reminder support
+
+Files
+-----
+index.html   Main app
+sw.js        Service worker/cache refresh
+manifest.json PWA metadata
+
+Note
+----
+Map tiles require internet access. Browser background notifications can be limited on Android; a native APK is more reliable for exact daily notifications.
