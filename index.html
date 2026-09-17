@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>Timeline-Teller</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#111827;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:1000}h1{font-size:23px;margin:0}h2{font-size:18px;margin:0 0 10px}.sub{color:#cbd5e1;font-size:13px;margin-top:4px}
+main{max-width:1000px;margin:auto;padding:14px}.card{background:#fff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 12px #0000000b}
+.row{display:flex;gap:10px;flex-wrap:wrap}.field{flex:1;min-width:135px}label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px}
+input,button,select{font:inherit}input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;background:#fff}
+button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827;color:#fff;font-weight:700;cursor:pointer;display:inline-block}.secondary{background:#475569}.success{background:#166534}.danger{background:#b91c1c}
+.muted{font-size:13px;color:#64748b}.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;padding:11px;border-radius:12px;font-size:13px}
+.hidden{display:none}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#f8fafc;border-radius:12px;padding:12px}.stat span{font-size:12px;color:#64748b}.stat b{display:block;font-size:21px;margin-top:2px}
+.list{display:flex;flex-direction:column;gap:8px}.item{border:1px solid #e2e8f0;border-radius:12px;padding:12px}.item strong{font-size:15px}.pill{display:inline-block;background:#eef2ff;border-radius:999px;padding:5px 8px;font-size:12px;margin:5px 4px 0 0}
+#map{height:400px;border-radius:14px;overflow:hidden}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:9px;border-bottom:1px solid #e5e7eb}th{color:#475569}
+.smallbtn{padding:7px 9px;font-size:12px}.fileinput{display:none}
+@media(min-width:650px){.stats{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>🗺️ Timeline-Teller</h1><div class="sub">Your personal travel history analyzer</div></header>
+<main>
+<section class="card">
+<h2>Import your Google Maps Timeline</h2>
+<p class="muted">Choose Timeline.json from your phone. TT processes it locally in your browser; the JSON is not uploaded to this GitHub site.</p>
+<label class="filebtn">📂 Choose Timeline.json<input id="file" class="fileinput" type="file" accept=".json,application/json"></label>
+<p id="status" class="muted"></p>
+</section>
+
+<section id="dashboard" class="hidden">
+<div class="card">
+<h2>📅 Data coverage</h2>
+<div id="coverage"></div>
+</div>
+
+<div class="card">
+<h2>🔎 Analyze a date range</h2>
+<div class="row">
+<div class="field"><label>From</label><input id="from" type="date"></div>
+<div class="field"><label>To</label><input id="to" type="date"></div>
+</div>
+<div style="margin-top:10px" class="row">
+<button id="latest" class="secondary">Latest day</button>
+<button id="allDates" class="secondary">Entire JSON</button>
+</div>
+</div>
+
+<div class="card">
+<h2>📊 Summary</h2>
+<div class="stats">
+<div class="stat"><span>Total distance</span><b id="distance">0 km</b></div>
+<div class="stat"><span>Journeys</span><b id="journeys">0</b></div>
+<div class="stat"><span>Travel time</span><b id="travelTime">0m</b></div>
+<div class="stat"><span>Places</span><b id="placeCount">0</b></div>
+</div>
+</div>
+
+<div class="card">
+<h2>⛽ Fuel calculator</h2>
+<div class="row">
+<div class="field"><label>Fuel price (₹/L)</label><input id="fuelPrice" type="number" value="70" min="0" step="0.01"></div>
+<div class="field"><label>Mileage (km/L)</label><input id="mileage" type="number" value="40" min="0.1" step="0.1"></div>
+</div>
+<p id="fuel" style="font-weight:700"></p>
+</div>
+
+<div class="card">
+<h2>📍 Time spent at places</h2>
+<p class="muted">Visits are grouped using place IDs when available, with a location grid fallback. The selected date range is applied.</p>
+<div id="places" class="list"></div>
+</div>
+
+<div class="card">
+<h2>🔁 Repeated journeys</h2>
+<p class="muted">Small GPS differences are grouped so repeated trips can be counted. Tap a route to highlight its journeys on the map.</p>
+<div id="routes" class="list"></div>
+</div>
+
+<div class="card">
+<h2>🏷️ Named regular trips</h2>
+<div id="named" class="list"></div>
+</div>
+
+<div class="card">
+<h2>🗺️ Map</h2>
+<div id="map"></div>
+<p class="muted">Map tiles require internet access. Your Timeline JSON is still processed locally.</p>
+</div>
+
+<div class="card">
+<h2>🔔 Daily reminder</h2>
+<div class="row">
+<div class="field"><label>Reminder time</label><input id="reminderTime" type="time" value="21:00"></div>
+<div class="field" style="align-self:end"><button id="reminderBtn" class="success">Enable reminder</button></div>
+</div>
+<p id="reminderStatus" class="muted">Browser notifications must be allowed. Exact background delivery depends on Android/browser support; a native APK can provide more reliable scheduled notifications later.</p>
+</div>
+
+<div class="card">
+<button id="clear" class="danger">Clear imported Timeline data</button>
+</div>
+</section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let data=null, segments=[], activities=[], visits=[], pathPoints=[], map=null, routeLayer=null, markerLayer=null, selectedRoute=null;
+const $=x=>document.getElementById(x);
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function ll(s){if(!s)return null;const m=String(s).match(/(-?\\d+(?:\\.\\d+)?)\\D*,\\s*(-?\\d+(?:\\.\\d+)?)/);return m?[+m[1],+m[2]]:null}
+function day(t){return new Date(t).toISOString().slice(0,10)}
+function overlap(a,b,from,to){const x=Math.max(Date.parse(a),Date.parse(from+"T00:00:00"));const y=Math.min(Date.parse(b),Date.parse(to+"T23:59:59.999"));return Math.max(0,(y-x)/1000)}
+function inRange(a,b,from,to){return Date.parse(b)>=Date.parse(from+"T00:00:00")&&Date.parse(a)<=Date.parse(to+"T23:59:59.999")}
+function dur(s){s=Math.round(Math.max(0,s));let y=Math.floor(s/31536000);s%=31536000;let mo=Math.floor(s/2592000);s%=2592000;let d=Math.floor(s/86400);s%=86400;let h=Math.floor(s/3600);s%=3600;let m=Math.floor(s/60);let out=[];if(y)out.push(y+"y");if(mo)out.push(mo+"mo");if(d)out.push(d+"d");if(h)out.push(h+"h");if(m)out.push(m+"m");return out.join(" ")||"0m"}
+function cluster(p){return p?Math.round(p[0]*180)/180+","+Math.round(p[1]*180)/180:null} // ~600m
+function routeKey(a,b){const x=cluster(a),y=cluster(b);if(!x||!y)return null;return x+" → "+y}
+function mode(t){return ({MOTORCYCLING:"🏍️ Motorcycle",IN_PASSENGER_VEHICLE:"🚗 Car",WALKING:"🚶 Walking",CYCLING:"🚲 Cycling",IN_BUS:"🚌 Bus",IN_TRAIN:"🚆 Train",FLYING:"✈️ Flight"})[t]||("🚙 "+String(t||"Travel").replaceAll("_"," ").toLowerCase())}
+function placeLabel(v){return v.placeId&&v.placeId!=="Unknown place"?"Place "+v.placeId.slice(-6):"Nearby place"}
+function parse(d){
+ data=d;segments=Array.isArray(d.semanticSegments)?d.semanticSegments:[];
+ activities=segments.filter(s=>s.activity).map(s=>({start:s.startTime,end:s.endTime,distance:+(s.activity.distanceMeters||0),mode:s.activity.topCandidate?.type||"UNKNOWN",a:ll(s.activity.start?.latLng),b:ll(s.activity.end?.latLng)}));
+ visits=segments.filter(s=>s.visit).map(s=>({start:s.startTime,end:s.endTime,id:s.visit.topCandidate?.placeId||"Unknown place",type:s.visit.topCandidate?.semanticType||"",p:ll(s.visit.topCandidate?.placeLocation?.latLng)}));
+ pathPoints=segments.flatMap(s=>(s.timelinePath||[]).map(p=>({time:p.time,p:ll(p.point)}))).filter(x=>x.p);
+ const times=segments.flatMap(s=>[s.startTime,s.endTime]).filter(Boolean).sort();
+ const lo=day(times[0]),hi=day(times.at(-1));
+ $("coverage").innerHTML="<b>"+new Date(times[0]).toLocaleString()+"</b> → <b>"+new Date(times.at(-1)).toLocaleString()+"</b><br><span class='muted'>"+segments.length.toLocaleString()+" segments</span>";
+ ["from","to"].forEach(id=>{$(id).min=lo;$(id).max=hi});
+ $("from").value=lo;$("to").value=hi;$("dashboard").classList.remove("hidden");initMap();render();
+}
+function initMap(){if(map)return;map=L.map("map").setView([20.6,78.9],5);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(map);routeLayer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map)}
+function render(){
+ if(!data)return;const f=$("from").value,t=$("to").value;if(!f||!t||f>t)return;
+ const acts=activities.filter(x=>inRange(x.start,x.end,f,t)), vs=visits.filter(x=>inRange(x.start,x.end,f,t));
+ const km=acts.reduce((s,x)=>s+x.distance,0)/1000, sec=acts.reduce((s,x)=>s+overlap(x.start,x.end,f,t),0);
+ $("distance").textContent=km.toLocaleString(undefined,{maximumFractionDigits:1})+" km";$("journeys").textContent=acts.length.toLocaleString();$("travelTime").textContent=dur(sec);$("placeCount").textContent=new Set(vs.map(v=>v.id)).size.toLocaleString();
+ const fp=+$("fuelPrice").value||0,mi=+$("mileage").value||0;
+ $("fuel").textContent=mi?`Estimated fuel: ${(km/mi).toLocaleString(undefined,{maximumFractionDigits:2})} L • Cost: ₹${(km/mi*fp).toLocaleString(undefined,{maximumFractionDigits:2})} • ₹${(fp/mi).toLocaleString(undefined,{maximumFractionDigits:2})}/km`:"Enter mileage";
+ renderPlaces(vs,f,t);renderRoutes(acts);renderNamed(f,t);drawMap(acts,f,t);
+}
+function renderPlaces(vs,f,t){
+ const g=new Map();
+ for(const v of vs){const k=v.id!=="Unknown place"?v.id:(cluster(v.p)||"unknown");if(!g.has(k))g.set(k,{label:placeLabel(v),sec:0,count:0,p:v.p});const x=g.get(k);x.sec+=overlap(v.start,v.end,f,t);x.count++}
+ const a=[...g.values()].sort((x,y)=>y.sec-x.sec).slice(0,100);
+ $("places").innerHTML=a.length?a.map((x,i)=>`<div class="item"><strong>${i+1}. ${esc(x.label)}</strong><br><span class="pill">⏱️ ${dur(x.sec)}</span><span class="pill">${x.count} visit${x.count==1?"":"s"}</span></div>`).join(""):"<span class='muted'>No visits in this range.</span>";
+}
+function renderRoutes(acts){
+ const g=new Map();
+ for(const x of acts){const k=routeKey(x.a,x.b);if(!k)continue;if(!g.has(k))g.set(k,{key:k,count:0,dist:0,mode:x.mode,a:x.a,b:x.b});const q=g.get(k);q.count++;q.dist+=x.distance}
+ const a=[...g.values()].sort((x,y)=>y.count-x.count).slice(0,100);
+ $("routes").innerHTML=a.length?a.map((x,i)=>{const safe=encodeURIComponent(x.key);return `<div class="item"><strong>${i+1}. ${esc(x.key)}</strong><br><span class="pill">🔁 ${x.count} trips</span><span class="pill">🛣️ ${(x.dist/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km</span><span class="pill">${mode(x.mode)}</span><br><button class="smallbtn" onclick="highlight('${safe}')">Highlight</button> <button class="smallbtn" onclick="nameTrip('${safe}')">Name this trip</button></div>`}).join(""):"<span class='muted'>No repeated routes could be identified.</span>";
+}
+function highlight(encoded){selectedRoute=decodeURIComponent(encoded);drawMap(activities.filter(x=>inRange(x.start,x.end,$("from").value,$("to").value)),$("from").value,$("to").value)}
+function nameTrip(encoded){const k=decodeURIComponent(encoded);const old=localStorage.getItem("tt-name-"+k)||"";const n=prompt("Name this regular trip:",old);if(n===null)return;if(n.trim())localStorage.setItem("tt-name-"+k,n.trim());renderNamed($("from").value,$("to").value)}
+function renderNamed(f,t){
+ const names=Object.keys(localStorage).filter(k=>k.startsWith("tt-name-")).map(k=>({key:k.slice(8),name:localStorage.getItem(k)}));
+ $("named").innerHTML=names.length?names.map(x=>{const a=activities.filter(q=>routeKey(q.a,q.b)===x.key&&inRange(q.start,q.end,f,t));const km=a.reduce((s,q)=>s+q.distance,0)/1000;return `<div class="item"><strong>🏷️ ${esc(x.name)}</strong><br><span class="pill">${a.length} trips in selected range</span><span class="pill">${km.toFixed(1)} km</span><br><button class="danger smallbtn" onclick="removeTrip('${encodeURIComponent(x.key)}')">Remove name</button></div>`}).join(""):"<span class='muted'>No named trips yet. Name a repeated route above.</span>";
+}
+function removeTrip(e){localStorage.removeItem("tt-name-"+decodeURIComponent(e));renderNamed($("from").value,$("to").value)}
+function drawMap(acts,f,t){
+ routeLayer.clearLayers();markerLayer.clearLayers();let all=[];
+ const chosen=selectedRoute;
+ for(const a of acts){
+   if(chosen&&routeKey(a.a,a.b)!==chosen)continue;
+   const pts=pathPoints.filter(p=>p.time&&Date.parse(p.time)>=Date.parse(a.start)-120000&&Date.parse(p.time)<=Date.parse(a.end)+120000).map(x=>x.p);
+   const line=pts.length>=2?pts:(a.a&&a.b?[a.a,a.b]:[]);
+   if(line.length>=2){L.polyline(line,{weight:chosen?6:3,opacity:chosen?.8:.35}).addTo(routeLayer);all.push(...line)}
+   if(a.a)L.circleMarker(a.a,{radius:4}).addTo(markerLayer);
+   if(a.b)L.circleMarker(a.b,{radius:4}).addTo(markerLayer);
+ }
+ if(all.length){map.fitBounds(L.latLngBounds(all),{padding:[20,20]})}
+}
+$("file").addEventListener("change",e=>{const file=e.target.files[0];if(!file)return;$("status").textContent="Reading "+file.name+"…";const r=new FileReader();r.onload=()=>{try{parse(JSON.parse(r.result));$("status").textContent="Loaded successfully. Your JSON stays in this browser tab."}catch(err){$("status").textContent="Could not read this JSON file. Please choose the Google Maps Timeline export."}};r.readAsText(file)});
+["from","to","fuelPrice","mileage"].forEach(id=>$(id).addEventListener("input",()=>{selectedRoute=null;render()}));
+$("latest").onclick=()=>{const hi=$("to").max;$("from").value=hi;$("to").value=hi;selectedRoute=null;render()};
+$("allDates").onclick=()=>{ $("from").value=$("from").min;$("to").value=$("to").max;selectedRoute=null;render()};
+$("clear").onclick=()=>{data=null;segments=[];activities=[];visits=[];pathPoints=[];$("dashboard").classList.add("hidden");$("file").value="";$("status").textContent="Imported data cleared."};
+$("reminderBtn").onclick=async()=>{if(!("Notification" in window)){$("reminderStatus").textContent="This browser does not support notifications.";return}const p=await Notification.requestPermission();if(p==="granted"){$("reminderStatus").textContent="Notifications allowed for "+$("reminderTime").value+". Web browsers may not deliver an exact daily background notification; native Android is more reliable."}else $("reminderStatus").textContent="Notification permission was not granted."};
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
