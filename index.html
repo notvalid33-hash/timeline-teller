@@ -3,206 +3,826 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-<title>Timeline Analyzer V2.2</title>
+<meta name="theme-color" content="#0b1224">
+<meta name="description" content="Timeline Analyzer — understand where you've been. Private, local Google Maps Timeline history analysis.">
+<title>Timeline Analyzer V2.3</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-header{background:#111827;color:#fff;padding:18px 16px;position:sticky;top:0;z-index:1000}h1{font-size:24px;margin:0}.sub{color:#cbd5e1;font-size:13px;margin-top:4px}
-main{max-width:1050px;margin:auto;padding:14px}.card{background:#fff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 2px 12px #0000000b}h2{font-size:18px;margin:0 0 10px}
-.row{display:flex;gap:10px;flex-wrap:wrap}.field{flex:1;min-width:135px}label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:5px}
-input,button,select{font:inherit}input,select{width:100%;padding:10px;border:1px solid #cbd5e1;border-radius:10px;background:#fff}
-button,.filebtn{border:0;border-radius:11px;padding:11px 14px;background:#111827;color:#fff;font-weight:700;cursor:pointer;display:inline-block}button:disabled{opacity:.55;cursor:default}
-.secondary{background:#475569}.success{background:#166534}.danger{background:#b91c1c}.linkbtn{background:#e0e7ff;color:#3730a3;text-decoration:none;border-radius:9px;padding:7px 9px;font-weight:700;display:inline-block}
-.muted{font-size:13px;color:#64748b}.notice{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;padding:11px;border-radius:12px;font-size:13px}.hidden{display:none}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#f8fafc;border-radius:12px;padding:12px}.stat span{font-size:12px;color:#64748b}.stat b{display:block;font-size:21px;margin-top:2px}
-.list{display:flex;flex-direction:column;gap:8px}.item{border:1px solid #e2e8f0;border-radius:12px;padding:12px}.item strong{font-size:15px}.item{overflow:hidden}.route-endpoints{font-size:14px;font-weight:700;line-height:1.35;word-break:break-word}.route-endpoint{display:inline}.route-arrow{display:inline-block;margin:0 5px;color:#64748b}.place-name-row{display:flex;gap:7px;align-items:center;margin-top:8px}.place-name-row input{flex:1;min-width:0}.place-name-row button{white-space:nowrap}.selected-note{background:#eef2ff;color:#3730a3;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:700;margin-top:8px}.pill{display:inline-block;background:#eef2ff;border-radius:999px;padding:5px 8px;font-size:12px;margin:5px 4px 0 0}
-.smallbtn{padding:7px 9px;font-size:12px}.fileinput{display:none}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.item-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.progress{height:8px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:8px}.progress>div{height:100%;width:0;background:#334155;transition:width .2s}
-.countbar{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}.searchrow{display:flex;gap:8px}.searchrow input{flex:1}
-#map{height:430px;border-radius:14px;overflow:hidden}.maptools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.placehint{font-size:12px;color:#64748b;margin-top:6px}.ok{color:#166534;font-weight:700}.empty{padding:10px 0}
-.gear-icon{color:#D2042D;font-size:28px;display:inline-block;margin-right:6px;vertical-align:-3px}.by-dinesh{text-align:center;font-weight:800;color:#D2042D;font-size:16px;margin:-4px 0 12px}
-.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;z-index:3000}.modal.hidden{display:none}.modalbox{background:#fff;border-radius:18px;max-width:540px;width:100%;max-height:88vh;overflow:auto;padding:20px;box-shadow:0 12px 40px #0005}.modalbox h2{margin-top:0}.modalbox ol{padding-left:22px}.modalbox li{margin:9px 0}.modalbox .close{width:100%;margin-top:12px}
-@media(min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.two-col .card{margin:0}}
-
-/* Timeline Analyzer V2.2 visual system */
-:root{--navy:#0f172a;--navy-2:#111c34;--slate:#475569;--muted:#64748b;--line:#e2e8f0;--surface:#ffffff;--soft:#f8fafc;--accent:#d2042d;--accent-2:#b51f42;--accent-soft:#fff1f3;--blue-soft:#eef5ff;--shadow:0 12px 34px rgba(15,23,42,.07)}
-body{background:linear-gradient(180deg,#f8fafc 0%,#f3f4f6 100%);color:#0f172a;letter-spacing:.01em}
-.app-header{background:linear-gradient(135deg,#0b1224 0%,#111c34 62%,#16213d 100%);padding:0;position:sticky;top:0;z-index:1000;box-shadow:0 8px 30px rgba(2,6,23,.18)}
-.header-inner{max-width:1100px;margin:auto;padding:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
-.brand-wrap{display:flex;align-items:center;gap:12px;min-width:0}.brand-mark{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:25px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)}
-.brand-copy{min-width:0}.brand-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.brand-title-row h1{font-size:23px;line-height:1.05;letter-spacing:-.02em}.version-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.12);color:#e2e8f0;font-size:10px;font-weight:800;letter-spacing:.08em}.version-badge.dark{background:#e2e8f0;color:#0f172a}.sub{color:#cbd5e1;font-size:13px;margin-top:5px}.header-badge{font-size:11px;font-weight:800;color:#e2e8f0;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 10px;white-space:nowrap}
-main{max-width:1100px;padding:16px}.card{background:rgba(255,255,255,.96);border:1px solid rgba(226,232,240,.9);border-radius:20px;padding:18px;margin:14px 0;box-shadow:var(--shadow)}.card h2{font-size:19px;letter-spacing:-.02em;margin:0 0 10px}.eyebrow{font-size:10px;font-weight:900;letter-spacing:.14em;color:#94a3b8;margin-bottom:7px}.import-card{padding:20px;background:linear-gradient(135deg,#fff 0%,#fffafb 100%);border-color:#f3d9df}.import-card h2{font-size:22px}.import-card .muted{max-width:760px;line-height:1.55}
-.toolbar{margin-top:14px}.filebtn{background:var(--navy);padding:12px 15px;border-radius:12px;box-shadow:0 8px 18px rgba(15,23,42,.14)}button,.filebtn{transition:transform .16s ease,box-shadow .16s ease,background .16s ease}.filebtn:hover,button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,23,42,.12)}button{background:var(--navy)}.secondary{background:#e2e8f0;color:#0f172a}.success{background:#166534}.danger{background:#b91c1c}.primary-cta{background:var(--accent);box-shadow:0 8px 18px rgba(210,4,45,.2)}
-.notice{background:linear-gradient(135deg,#eff6ff,#f8fbff);border-color:#bfdbfe;border-radius:14px;padding:13px 14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55)}
-.stats{gap:12px}.stat{background:linear-gradient(180deg,#fbfdff,#f8fafc);border:1px solid #e9eef5;border-radius:15px;padding:14px}.stat span{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.stat b{font-size:23px;letter-spacing:-.02em}
-input,select{border:1px solid #dbe3ec;border-radius:12px;padding:11px 12px;outline:none;transition:border-color .16s ease,box-shadow .16s ease}input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.18)}
-.item{border:1px solid #e7ecf2;border-radius:15px;padding:13px;background:#fff}.item strong{font-size:15px}.pill{background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;padding:5px 8px}.linkbtn{background:#f1f5f9;color:#0f172a;border:1px solid #e2e8f0}.selected-note{background:var(--accent-soft);color:#9f1239;border:1px solid #fecdd3}
-.place-name-row button{background:#166534}.countbar{margin:10px 0 11px}.searchrow input{background:#fbfdff}
-#map{height:440px;border-radius:16px;border:1px solid #e2e8f0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}.map-card{overflow:hidden}.maptools{margin-top:10px}
-.gear-icon{color:var(--accent);font-size:34px;display:inline-block;filter:drop-shadow(0 3px 8px rgba(210,4,45,.18))}.by-dinesh{text-align:center;font-weight:900;color:var(--accent);font-size:16px;margin:2px 0 2px;letter-spacing:.03em}.welcome-box{max-width:620px;padding:0;overflow:hidden;border:1px solid #eef1f5;box-shadow:0 20px 60px rgba(2,6,23,.25)}.welcome-top{padding:24px 22px 18px;background:linear-gradient(180deg,#fbfcff 0%,#fff 100%);text-align:center;border-bottom:1px solid #edf1f5}.welcome-gear{color:var(--accent);font-size:52px;line-height:1;filter:drop-shadow(0 4px 12px rgba(210,4,45,.18));margin-bottom:10px}.welcome-brand{font-size:22px;font-weight:900;letter-spacing:-.025em}.welcome-tagline{margin-top:7px;color:#64748b;font-size:14px;font-weight:700}.welcome-copy{margin:0;padding:18px 22px 8px;color:#475569;line-height:1.55;text-align:center}.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 22px 14px}.feature{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#f8fafc;border:1px solid #e8edf3;border-radius:14px;text-align:left}.feature>span{font-size:21px}.feature b{display:block;font-size:13px}.feature small{display:block;color:#64748b;font-size:11px;margin-top:2px}.guide-box{margin:4px 22px 14px;padding:14px;border:1px solid #e8edf3;border-radius:15px;background:#fbfdff}.guide-title{font-size:14px;font-weight:900;margin-bottom:8px}.guide-box ol{margin:0;padding-left:21px}.guide-box li{margin:8px 0;font-size:13px;color:#334155}.guide-note{margin:10px 0 0}.privacy-note{display:flex;gap:10px;align-items:flex-start;margin:0 22px 16px;padding:12px 13px;border-radius:14px;background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;font-size:12px}.privacy-note>span{font-size:18px;line-height:1}.privacy-note div span{color:#476255}.modal{background:rgba(2,6,23,.66);backdrop-filter:blur(4px)}.modalbox .close{margin-top:0}.app-footer{text-align:center;color:#94a3b8;font-size:11px;padding:20px 10px 10px}
-@media(max-width:699px){.header-inner{align-items:flex-start}.header-badge{display:none}.brand-mark{width:42px;height:42px;font-size:22px}.brand-title-row h1{font-size:21px}.stats{grid-template-columns:1fr 1fr}.feature-grid{grid-template-columns:1fr}.welcome-box{max-height:92vh}.welcome-copy{font-size:13px}.app-footer{padding-bottom:24px}}
+:root{
+  --navy:#0b1224;--navy2:#111c34;--slate:#475569;--muted:#64748b;--line:#e4eaf1;
+  --surface:#fff;--soft:#f7f9fc;--accent:#d2042d;--accent2:#b51f42;--accentSoft:#fff1f3;
+  --blueSoft:#eef5ff;--green:#166534;--greenSoft:#effaf2;--shadow:0 14px 40px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#f7f9fc 0%,#eef2f6 100%);color:#0f172a;font-family:system-ui,-apple-system,Segoe UI,sans-serif;letter-spacing:.01em}
+button,input,select{font:inherit}
+button,.filebtn{border:0;border-radius:12px;padding:11px 14px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer;transition:.16s}
+button:hover,.filebtn:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,23,42,.13)}
+button:disabled{opacity:.55;cursor:default;transform:none;box-shadow:none}
+.secondary{background:#e2e8f0;color:#0f172a}
+.success{background:var(--green)}
+.danger{background:#b91c1c}
+.primary-cta{background:var(--accent);box-shadow:0 8px 20px rgba(210,4,45,.2)}
+.smallbtn{padding:8px 10px;font-size:12px}
+.hidden{display:none!important}
+.muted{color:var(--muted);font-size:13px;line-height:1.5}
+.ok{color:var(--green);font-weight:800}
+.eyebrow{font-size:10px;font-weight:900;letter-spacing:.15em;color:#94a3b8;margin-bottom:6px}
+.app-header{position:sticky;top:0;z-index:1100;background:linear-gradient(135deg,#080f20,#111b33 65%,#17223e);color:#fff;box-shadow:0 10px 30px rgba(2,6,23,.2)}
+.header-inner{max-width:1120px;margin:auto;padding:11px 14px;display:flex;align-items:center;gap:10px}
+.menu-btn{width:42px;height:42px;display:grid;place-items:center;padding:0;border-radius:13px;background:rgba(255,255,255,.08);box-shadow:none;font-size:24px;flex:none}
+.brand-wrap{display:flex;align-items:center;gap:11px;min-width:0;flex:1}
+.brand-mark{width:41px;height:41px;border-radius:13px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-size:22px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.brand-copy{min-width:0}.brand-title-row{display:flex;align-items:center;gap:7px}.brand-title-row h1{margin:0;font-size:20px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.version-badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:rgba(255,255,255,.12);color:#e2e8f0;font-size:9px;font-weight:900;letter-spacing:.08em}
+.sub{color:#cbd5e1;font-size:11px;margin-top:3px;white-space:nowrap}
+.header-badge{font-size:10px;font-weight:800;color:#e2e8f0;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:999px;padding:7px 9px;white-space:nowrap}
+.ready-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:none;box-shadow:0 0 0 4px rgba(34,197,94,.12)}
+body.data-ready .ready-dot{display:block}
+main{max-width:1120px;margin:auto;padding:13px}
+.front-only{display:block}
+.view{display:none}.view.active{display:block}
+.card{background:rgba(255,255,255,.97);border:1px solid rgba(226,232,240,.95);border-radius:20px;padding:17px;margin:12px 0;box-shadow:var(--shadow)}
+.card h2{margin:0 0 9px;font-size:18px;letter-spacing:-.02em}
+.coverage-card{padding:18px;background:linear-gradient(135deg,#fff,#fbfdff)}
+.coverage-value{font-size:17px;font-weight:900;line-height:1.35}
+.range-card .row{margin-top:4px}.row{display:flex;gap:9px;flex-wrap:wrap}.field{flex:1;min-width:135px}
+label{display:block;font-size:11px;font-weight:800;color:var(--slate);margin:0 0 5px}
+input,select{width:100%;border:1px solid #d8e0e9;border-radius:12px;padding:10px 11px;background:#fff;outline:0;transition:.16s}
+input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,184,.16)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:linear-gradient(180deg,#fbfdff,#f7f9fc);border:1px solid #e8edf3;border-radius:15px;padding:12px}
+.stat span{display:block;color:#64748b;font-size:10px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+.stat b{display:block;margin-top:2px;font-size:21px;letter-spacing:-.025em}
+.hero-note{margin-top:9px;padding:10px 12px;border-radius:12px;background:var(--blueSoft);border:1px solid #cfe0f8;color:#315b95;font-size:12px;font-weight:700}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.filebtn{display:inline-block}.fileinput{display:none}
+.notice{padding:12px 13px;background:linear-gradient(135deg,#eff6ff,#f8fbff);border:1px solid #bfdbfe;color:#1d4ed8;border-radius:14px;font-size:12px}
+.progress{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-top:9px}.progress>div{height:100%;width:0;background:#334155;transition:.2s}
+.countbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin:9px 0}
+.searchrow{display:flex;gap:8px}.searchrow input{flex:1}.list{display:flex;flex-direction:column;gap:9px}
+.item{border:1px solid #e4eaf1;border-radius:15px;padding:13px;background:#fff;overflow:hidden}
+.item strong{font-size:14px}.pill{display:inline-block;background:#f1f5f9;color:#334155;border:1px solid #e2e8f0;border-radius:999px;padding:5px 8px;font-size:11px;margin:5px 4px 0 0}
+.item-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.linkbtn{display:inline-block;padding:8px 10px;border-radius:10px;background:#f1f5f9;border:1px solid #e2e8f0;color:#0f172a;text-decoration:none;font-weight:800;font-size:12px}
+.route-endpoints{font-size:13px;font-weight:800;line-height:1.4;margin-top:3px;word-break:break-word}.route-arrow{color:#64748b;margin:0 4px}
+.placehint{font-size:11px;color:#64748b;margin-top:5px}.place-name-row{display:flex;gap:7px;align-items:center;margin-top:8px}.place-name-row input{flex:1;min-width:0}.place-name-row button{white-space:nowrap}
+.empty{padding:12px 0}.selected-note{display:block;background:var(--accentSoft);color:#9f1239;border:1px solid #fecdd3;border-radius:11px;padding:9px 11px;font-size:12px;font-weight:800}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tool-card{margin:0}
+.section-title-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.section-title-row h2{margin:0}
+.menu-overlay{position:fixed;inset:0;background:rgba(2,6,23,.55);backdrop-filter:blur(3px);z-index:2000;display:none}
+.menu-overlay.open{display:block}.side-menu{position:fixed;left:0;top:0;bottom:0;width:min(340px,88vw);background:#fff;z-index:2100;box-shadow:18px 0 45px rgba(2,6,23,.25);transform:translateX(-105%);transition:transform .2s ease;display:flex;flex-direction:column}
+.side-menu.open{transform:translateX(0)}.menu-head{padding:18px;background:linear-gradient(135deg,#0b1224,#17223e);color:#fff}.menu-brand{font-weight:900;font-size:18px}.menu-tag{font-size:11px;color:#cbd5e1;margin-top:3px}.menu-list{padding:9px;overflow:auto;flex:1}
+.menu-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;padding:11px 12px;background:transparent;color:#0f172a;border-radius:12px;box-shadow:none}.menu-item:hover{background:#f1f5f9;box-shadow:none;transform:none}.menu-icon{width:28px;text-align:center;font-size:18px}.menu-item small{display:block;color:#64748b;font-weight:600;margin-top:1px}
+.menu-divider{height:1px;background:#e8edf3;margin:8px 6px}.menu-foot{padding:12px;border-top:1px solid #e8edf3;font-size:11px;color:#64748b}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.68);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:14px;z-index:3000}
+.modal.hidden{display:none}.modalbox{background:#fff;border-radius:20px;max-width:680px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(2,6,23,.28)}
+.welcome-box{overflow:hidden}.welcome-top{padding:24px 20px 18px;text-align:center;background:linear-gradient(180deg,#fbfcff,#fff);border-bottom:1px solid #edf1f5}
+.welcome-gear{color:var(--accent);font-size:52px;line-height:1;filter:drop-shadow(0 4px 12px rgba(210,4,45,.18));margin-bottom:8px}
+.welcome-brand{font-size:22px;font-weight:900}.version-badge.dark{background:#e2e8f0;color:#0f172a}.by-dinesh{color:var(--accent);font-weight:900;font-size:15px;margin-top:4px}.welcome-tagline{color:#64748b;font-size:14px;font-weight:800;margin-top:7px}
+.welcome-copy{padding:18px 20px 8px;text-align:center;color:#475569;line-height:1.55}.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:9px 20px 13px}.feature{display:flex;gap:10px;padding:11px;border:1px solid #e8edf3;border-radius:14px;background:#f8fafc}.feature>span{font-size:20px}.feature b{display:block;font-size:12px}.feature small{display:block;color:#64748b;font-size:10px;margin-top:2px}
+.guide-box{margin:4px 20px 13px;padding:13px;border:1px solid #e8edf3;border-radius:14px;background:#fbfdff}.guide-title{font-weight:900;font-size:13px;margin-bottom:7px}.guide-box ol{margin:0;padding-left:20px}.guide-box li{margin:7px 0;font-size:12px;color:#334155}
+.privacy-note{display:flex;gap:9px;align-items:flex-start;margin:0 20px 15px;padding:11px;border-radius:13px;background:var(--greenSoft);border:1px solid #bbf7d0;color:#166534;font-size:11px}
+.modal-actions{padding:0 20px 20px}.modal-actions button{width:100%}
+.place-detail-grid,.record-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.detail{padding:11px;border:1px solid #e8edf3;border-radius:13px;background:#fafcff}.detail span{display:block;color:#64748b;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em}.detail b{display:block;margin-top:2px;font-size:15px}
+.chart-wrap{overflow-x:auto;padding-bottom:3px}.bar-chart{display:flex;align-items:flex-end;gap:8px;min-height:190px;padding:12px 4px 6px}.bar-col{min-width:30px;height:165px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}.bar-value{font-size:9px;color:#475569;white-space:nowrap}.bar{width:22px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,#334155,#111827);min-height:3px}.bar-label{font-size:9px;color:#64748b;white-space:nowrap}
+.kpi-row{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.kpi{padding:12px;border-radius:14px;background:#fafcff;border:1px solid #e7edf4}.kpi b{font-size:19px;display:block}.kpi span{font-size:10px;color:#64748b;font-weight:800}
+.map-card{overflow:hidden}.map-tabs{display:flex;gap:7px;overflow:auto;padding:2px 0 9px}.map-tab{white-space:nowrap}.map-tab.active{background:#0f172a;color:#fff}
+#map{height:440px;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden}.maptools{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.search-results .item{cursor:default}.result-title{font-weight:900}.highlight{color:#9f1239;font-weight:900}
+.report-pre{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.5;background:#0b1224;color:#e2e8f0;border-radius:14px;padding:14px;overflow:auto;max-height:55vh}
+.footer{text-align:center;color:#94a3b8;font-size:10px;padding:18px 6px 10px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}.record-grid{grid-template-columns:repeat(4,1fr)}.place-detail-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:759px){.two-col{grid-template-columns:1fr}.header-badge{display:none}.sub{font-size:10px}.brand-mark{display:none}}
+@media(max-width:520px){.feature-grid{grid-template-columns:1fr}.place-detail-grid,.record-grid,.kpi-row{grid-template-columns:1fr 1fr}.welcome-brand{font-size:20px}}
+@media print{
+  .app-header,.menu-overlay,.side-menu,.modal,.no-print{display:none!important}
+  body{background:#fff}.view{display:none!important}.view.active{display:block!important}
+  .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}.report-print-only{display:block!important}
+}
+.report-print-only{display:none}
 </style>
 </head>
 <body>
 <header class="app-header">
   <div class="header-inner">
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
     <div class="brand-wrap">
       <div class="brand-mark" aria-hidden="true">🗺️</div>
       <div class="brand-copy">
-        <div class="brand-title-row"><h1>Timeline Analyzer</h1><span class="version-badge">V2.2</span></div>
+        <div class="brand-title-row"><h1>Timeline Analyzer</h1><span class="version-badge">V2.3</span><span class="ready-dot"></span></div>
         <div class="sub">Understand where you've been.</div>
       </div>
     </div>
     <div class="header-badge">🔒 Private · Local processing</div>
   </div>
 </header>
-<main>
-<div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-  <div class="modalbox welcome-box">
-    <div class="welcome-top">
-      <div class="welcome-gear" aria-hidden="true">⚙</div>
-      <div class="welcome-brand">Timeline Analyzer <span class="version-badge dark">V2.2</span></div>
-      <div class="by-dinesh">By Dinesh</div>
-      <div class="welcome-tagline">Understand where you've been.</div>
-    </div>
-    <p class="welcome-copy">Turn your exported Google Maps Timeline into a private, personal travel dashboard — with distance, places, repeated journeys, fuel estimates and maps.</p>
-    <div class="feature-grid">
-      <div class="feature"><span>📊</span><div><b>Deep insights</b><small>Analyze your full history</small></div></div>
-      <div class="feature"><span>📍</span><div><b>Places & stays</b><small>See where time was spent</small></div></div>
-      <div class="feature"><span>🔁</span><div><b>Repeated journeys</b><small>Find your regular routes</small></div></div>
-      <div class="feature"><span>🗺️</span><div><b>Map view</b><small>Explore paths visually</small></div></div>
-    </div>
-    <div class="guide-box">
-      <div class="guide-title" id="helpTitle">📥 How to get Timeline.json</div>
-      <ol>
-        <li>Open your phone's <b>Settings</b>.</li>
-        <li>Tap <b>Location</b> → <b>Location services</b> → <b>Timeline</b>.</li>
-        <li>Tap <b>Export Timeline data</b>.</li>
-        <li>Tap <b>Continue</b>, choose where to save the file, then tap <b>Save</b>.</li>
-        <li>Return here and tap <b>Choose Timeline.json</b>.</li>
-      </ol>
-      <p class="muted guide-note">Google's menu names can vary slightly by Android phone/version.</p>
-    </div>
-    <div class="privacy-note"><span>🔐</span><div><b>Your data stays local</b><br><span>Timeline Analyzer processes the JSON in this browser. Your Timeline file is not uploaded to this GitHub site.</span></div></div>
-    <button class="close primary-cta" onclick="closeHelp()">Get started&nbsp; →</button>
+
+<div id="menuOverlay" class="menu-overlay"></div>
+<aside id="sideMenu" class="side-menu" aria-label="Timeline Analyzer menu">
+  <div class="menu-head">
+    <div class="menu-brand">Timeline Analyzer <span class="version-badge">V2.3</span></div>
+    <div class="menu-tag">Understand where you've been.</div>
   </div>
-</div>
-<section class="card import-card"><div class="eyebrow">PRIVATE TRAVEL ANALYSIS</div><h2>📥 Import your Google Maps Timeline</h2><p class="muted">Choose your exported <b>Timeline.json</b>. Timeline Analyzer processes the file locally in your browser; it is never uploaded to this GitHub site.</p>
-<div class="toolbar"><label class="filebtn">📂 Choose Timeline.json<input id="file" class="fileinput" type="file" accept=".json,application/json"></label><button class="secondary smallbtn" onclick="openHelp()">❓ Timeline.json guide</button></div>
-<div id="loadProgress" class="progress hidden"><div></div></div><p id="status" class="muted"></p></section>
-<section id="dashboard" class="hidden">
-<div id="integrity" class="card"></div>
-<div class="card"><h2>📅 Data coverage</h2><div id="coverage"></div></div>
-<div class="card"><div class="eyebrow">FILTER</div><h2>🔎 Analyze a date range</h2><div class="row"><div class="field"><label>From</label><input id="from" type="date"></div><div class="field"><label>To</label><input id="to" type="date"></div></div><div style="margin-top:10px" class="row"><button id="latest" class="secondary">Latest day</button><button id="allDates" class="secondary">Entire JSON</button></div></div>
-<div class="card"><div class="eyebrow">OVERVIEW</div><h2>📊 Summary</h2><div class="stats"><div class="stat"><span>Total distance</span><b id="distance">0 km</b></div><div class="stat"><span>Journeys</span><b id="journeys">0</b></div><div class="stat"><span>Travel time</span><b id="travelTime">0m</b></div><div class="stat"><span>Places</span><b id="placeCount">0</b></div></div></div>
-<div class="two-col"><div class="card tool-card"><div class="eyebrow">TRAVEL COST</div><h2>⛽ Fuel calculator</h2><div class="row"><div class="field"><label>Fuel price (₹/L)</label><input id="fuelPrice" type="number" value="70" min="0" step="0.01"></div><div class="field"><label>Mileage (km/L)</label><input id="mileage" type="number" value="40" min="0.1" step="0.1"></div></div><p id="fuel" style="font-weight:700"></p></div>
-<div class="card tool-card"><div class="eyebrow">DAILY HABIT</div><h2>🔔 Daily reminder</h2><div class="row"><div class="field"><label>Reminder time</label><input id="reminderTime" type="time" value="21:00"></div><div class="field" style="align-self:end"><button id="reminderBtn" class="success">Enable reminder</button></div></div><p id="reminderStatus" class="muted">Browser notifications can be limited in the background on Android. V2 stores the chosen time and schedules a browser timer while the page/app is running; a native Android APK is more reliable for exact daily delivery.</p></div></div>
-<div class="card"><div class="eyebrow">PLACES</div><h2>📍 Time spent at places</h2><p class="muted">All distinct Place IDs in the selected range are kept. The Google Timeline JSON normally contains a Place ID and coordinates, not a readable business/home name, so TT does not invent names. Use <b>Open in Google Maps</b> to inspect the corresponding place.</p>
-<div class="searchrow"><input id="placeSearch" type="search" placeholder="Search Place ID or coordinates"><button id="clearPlaceSearch" class="secondary smallbtn">Clear</button></div><div class="countbar"><span id="placeCountLabel" class="muted"></span><span class="muted">Sorted by time spent</span></div><div id="places" class="list"></div></div>
-<div class="card"><div class="eyebrow">ROUTES</div><h2>🔁 Repeated journeys</h2><p class="muted">Trips are grouped by rounded start/end GPS points so small GPS differences do not split an otherwise repeated route. Tap a route to highlight its journeys on the map.</p><div class="countbar"><span id="routeCountLabel" class="muted"></span><span class="muted">Sorted by trip count</span></div><div id="routes" class="list"></div></div>
-<div class="card"><div class="eyebrow">SAVED NAMES</div><h2>🏷️ Named regular trips</h2><div id="named" class="list"></div></div>
-<div class="card map-card"><div class="eyebrow">VISUALIZE</div><h2>🗺️ Map</h2><div id="map"></div><div class="maptools"><button id="resetMap" class="secondary smallbtn">Reset map</button><button id="clearSelection" class="secondary smallbtn">Clear selection</button></div><p id="mapStatus" class="muted"></p><p class="muted">Map tiles require internet access. Your Timeline JSON remains local.</p></div>
-<div class="card"><button id="clear" class="danger">Clear imported Timeline data</button></div>
-</section><footer class="app-footer">Timeline Analyzer V2.2 · By Dinesh · Your travel history stays in this browser.</footer></main>
+  <nav class="menu-list">
+    <button class="menu-item" data-view="overview"><span class="menu-icon">🏠</span><span><b>Overview</b><small>Coverage, range & summary</small></span></button>
+    <button class="menu-item" data-view="dashboardView"><span class="menu-icon">📊</span><span><b>Travel dashboard</b><small>Stats & personal records</small></span></button>
+    <button class="menu-item" data-view="onThisDay"><span class="menu-icon">📅</span><span><b>On this day</b><small>Revisit the same date across years</small></span></button>
+    <button class="menu-item" data-view="placesView"><span class="menu-icon">📍</span><span><b>Places</b><small>Time spent, names & insights</small></span></button>
+    <button class="menu-item" data-view="routesView"><span class="menu-icon">🔁</span><span><b>Routes</b><small>Repeated journeys & saved names</small></span></button>
+    <button class="menu-item" data-view="mapView"><span class="menu-icon">🗺️</span><span><b>Map & heatmap</b><small>Explore your travel density</small></span></button>
+    <button class="menu-item" data-view="trendsView"><span class="menu-icon">📈</span><span><b>Trends & travel cost</b><small>Monthly charts & fuel history</small></span></button>
+    <button class="menu-item" data-view="searchView"><span class="menu-icon">🔎</span><span><b>Timeline search</b><small>Search places, dates, modes & distances</small></span></button>
+    <button class="menu-item" data-view="toolsView"><span class="menu-icon">⛽</span><span><b>Fuel & reminder</b><small>Calculator and daily reminder</small></span></button>
+    <button class="menu-item" data-view="reportView"><span class="menu-icon">📄</span><span><b>Travel report</b><small>Generate, download or print</small></span></button>
+    <div class="menu-divider"></div>
+    <button class="menu-item" data-view="importView"><span class="menu-icon">📥</span><span><b>Import / JSON guide</b><small>Change Timeline.json or view export steps</small></span></button>
+    <button class="menu-item" id="clearDataMenu"><span class="menu-icon">🗑️</span><span><b>Clear local data</b><small>Remove imported history from this tab</small></span></button>
+  </nav>
+  <div class="menu-foot">Timeline Analyzer V2.3 · By Dinesh<br>Your Timeline JSON is processed locally in this browser.</div>
+</aside>
+
+<main>
+  <!-- Opening welcome / export instructions -->
+  <div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="modalbox welcome-box">
+      <div class="welcome-top">
+        <div class="welcome-gear" aria-hidden="true">⚙</div>
+        <div class="welcome-brand">Timeline Analyzer <span class="version-badge dark">V2.3</span></div>
+        <div class="by-dinesh">By Dinesh</div>
+        <div class="welcome-tagline">Understand where you've been.</div>
+      </div>
+      <p class="welcome-copy">Turn your exported Google Maps Timeline into a private travel analytics dashboard — with distance, places, routes, trends, travel costs and personal records.</p>
+      <div class="feature-grid">
+        <div class="feature"><span>📊</span><div><b>Travel dashboard</b><small>Stats & personal records</small></div></div>
+        <div class="feature"><span>📍</span><div><b>Places & stays</b><small>Time spent and custom names</small></div></div>
+        <div class="feature"><span>🔁</span><div><b>Repeated routes</b><small>Counts and clean map highlights</small></div></div>
+        <div class="feature"><span>📈</span><div><b>Trends & costs</b><small>Monthly travel and fuel estimates</small></div></div>
+      </div>
+      <div class="guide-box">
+        <div class="guide-title" id="helpTitle">📥 How to get Timeline.json</div>
+        <ol>
+          <li>Open your phone's <b>Settings</b>.</li>
+          <li>Tap <b>Location</b> → <b>Location services</b> → <b>Timeline</b>.</li>
+          <li>Tap <b>Export Timeline data</b>.</li>
+          <li>Tap <b>Continue</b>, choose where to save the file, then tap <b>Save</b>.</li>
+          <li>Return here and tap <b>Choose Timeline.json</b>.</li>
+        </ol>
+        <p class="muted">Google's menu names can vary slightly by Android phone/version.</p>
+      </div>
+      <div class="privacy-note"><span>🔐</span><div><b>Your data stays local</b><br>Timeline Analyzer processes the JSON in this browser. Your Timeline file is not uploaded to this GitHub site.</div></div>
+      <div class="modal-actions"><button class="primary-cta" id="welcomeClose">Get started →</button></div>
+    </div>
+  </div>
+
+  <!-- Generic insight modal -->
+  <div id="insightModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modalbox" style="padding:18px">
+      <div class="section-title-row"><h2 id="insightTitle">Insights</h2><button class="secondary smallbtn" id="insightClose">Close</button></div>
+      <div id="insightBody"></div>
+    </div>
+  </div>
+
+  <section id="overview" class="view active">
+    <div id="frontIntro" class="card" style="padding:14px 16px">
+      <div class="eyebrow">PRIVATE TRAVEL ANALYSIS</div>
+      <div style="font-weight:900;font-size:15px">Start with your Timeline.json</div>
+      <div class="muted">Use ☰ in the top-left for every other feature.</div>
+    </div>
+    <div id="frontImport" class="card import-card">
+      <div class="eyebrow">PRIVATE TRAVEL ANALYSIS</div>
+      <h2>📥 Import your Google Maps Timeline</h2>
+      <p class="muted">Choose your exported <b>Timeline.json</b>. Timeline Analyzer processes the file locally in your browser; it is never uploaded to this GitHub site.</p>
+      <div class="toolbar">
+        <label class="filebtn">📂 Choose Timeline.json<input id="file" class="fileinput" type="file" accept=".json,application/json"></label>
+        <button class="secondary smallbtn" id="guideBtn">❓ Timeline.json guide</button>
+      </div>
+      <div id="loadProgress" class="progress hidden"><div></div></div>
+      <p id="status" class="muted"></p>
+    </div>
+
+    <section id="frontData" class="hidden">
+      <div class="card coverage-card">
+        <div class="eyebrow">DATA COVERAGE</div>
+        <div class="coverage-value" id="coverageValue">—</div>
+        <div id="coverageMeta" class="muted"></div>
+      </div>
+      <div class="card range-card">
+        <div class="eyebrow">FILTER</div>
+        <h2>🔎 Analyze a date range</h2>
+        <div class="row">
+          <div class="field"><label>From</label><input id="from" type="date"></div>
+          <div class="field"><label>To</label><input id="to" type="date"></div>
+        </div>
+        <div class="toolbar" style="margin-top:9px">
+          <button id="latest" class="secondary">Latest day</button>
+          <button id="allDates" class="secondary">Entire JSON</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">OVERVIEW</div>
+        <h2>📊 Summary</h2>
+        <div class="stats">
+          <div class="stat"><span>Total distance</span><b id="distance">0 km</b></div>
+          <div class="stat"><span>Journeys</span><b id="journeys">0</b></div>
+          <div class="stat"><span>Travel time</span><b id="travelTime">0m</b></div>
+          <div class="stat"><span>Places</span><b id="placeCount">0</b></div>
+          <div class="stat"><span>Avg / active day</span><b id="avgDay">0 km</b></div>
+          <div class="stat"><span>Active days</span><b id="activeDays">0</b></div>
+        </div>
+        <div class="hero-note">☰ <b>More insights:</b> dashboard, places, repeated routes, map & heatmap, trends, search, fuel, reminders and reports.</div>
+      </div>
+    </section>
+  </section>
+
+  <section id="dashboardView" class="view">
+    <div class="card">
+      <div class="eyebrow">TRAVEL DASHBOARD</div><h2>📊 Your travel at a glance</h2>
+      <div class="stats">
+        <div class="stat"><span>Total distance</span><b id="dashKm">0 km</b></div>
+        <div class="stat"><span>Journeys</span><b id="dashTrips">0</b></div>
+        <div class="stat"><span>Travel time</span><b id="dashTime">0m</b></div>
+        <div class="stat"><span>Places</span><b id="dashPlaces">0</b></div>
+        <div class="stat"><span>Avg / trip</span><b id="dashAvgTrip">0 km</b></div>
+        <div class="stat"><span>Most-used mode</span><b id="dashMode">—</b></div>
+        <div class="stat"><span>Longest journey</span><b id="dashLongest">0 km</b></div>
+        <div class="stat"><span>Busiest month</span><b id="dashMonth">—</b></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">PERSONAL RECORDS</div><h2>🏆 Your travel records</h2>
+      <div class="record-grid">
+        <div class="detail"><span>Longest journey</span><b id="recLongest">—</b></div>
+        <div class="detail"><span>Farthest day</span><b id="recDay">—</b></div>
+        <div class="detail"><span>Busiest month</span><b id="recMonth">—</b></div>
+        <div class="detail"><span>Most common mode</span><b id="recMode">—</b></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">TOP PLACES</div><h2>📍 Places you spend the most time</h2>
+      <div id="topPlaces" class="list"></div>
+    </div>
+  </section>
+
+  <section id="onThisDay" class="view">
+    <div class="card">
+      <div class="eyebrow">MEMORY LANE</div><h2>📅 On this day</h2>
+      <p class="muted">Choose a date. Timeline Analyzer compares that calendar day across every year available in your JSON.</p>
+      <div class="row">
+        <div class="field"><label>Date</label><input id="otdDate" type="date"></div>
+        <div class="field" style="align-self:end"><button id="otdToday" class="secondary smallbtn">Use latest date</button></div>
+      </div>
+    </div>
+    <div id="otdSummary" class="card"></div>
+    <div class="card"><div class="eyebrow">YEAR-BY-YEAR</div><h2>🗓️ Matching days</h2><div id="otdYears" class="list"></div></div>
+  </section>
+
+  <section id="placesView" class="view">
+    <div class="card">
+      <div class="eyebrow">PLACES</div><h2>📍 Time spent at places</h2>
+      <p class="muted">All distinct Place IDs remain available. Add your own names such as <b>Home</b> or <b>Office</b>; names are saved only in this browser.</p>
+      <div class="searchrow"><input id="placeSearch" type="search" placeholder="Search name, Place ID, coordinates or type"><button id="clearPlaceSearch" class="secondary smallbtn">Clear</button></div>
+      <div class="countbar"><span id="placeCountLabel" class="muted"></span><span class="muted">Sorted by time spent</span></div>
+      <div id="places" class="list"></div>
+    </div>
+  </section>
+
+  <section id="routesView" class="view">
+    <div class="card">
+      <div class="eyebrow">REPEATED ROUTES</div><h2>🔁 Regular journeys</h2>
+      <p class="muted">Trips are grouped by rounded start/end GPS points. Highlighting a route shows one representative GPS path to keep the map clean.</p>
+      <div class="countbar"><span id="routeCountLabel" class="muted"></span><span class="muted">Sorted by trip count</span></div>
+      <div id="routes" class="list"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">SAVED NAMES</div><h2>🏷️ Named regular trips</h2>
+      <div id="named" class="list"></div>
+    </div>
+  </section>
+
+  <section id="mapView" class="view">
+    <div class="card map-card">
+      <div class="section-title-row"><div><div class="eyebrow">VISUALIZE</div><h2>🗺️ Map & travel heatmap</h2></div><button id="mapClear" class="secondary smallbtn">Reset</button></div>
+      <div class="map-tabs">
+        <button class="map-tab active smallbtn" data-mapmode="overview">Overview</button>
+        <button class="map-tab secondary smallbtn" data-mapmode="heatmap">Travel heatmap</button>
+      </div>
+      <div id="map"></div>
+      <p id="mapStatus" class="muted"></p>
+      <p class="muted">Map tiles require internet access. Your Timeline JSON remains local.</p>
+    </div>
+  </section>
+
+  <section id="trendsView" class="view">
+    <div class="card">
+      <div class="eyebrow">TRAVEL TRENDS</div><h2>📈 Distance by month</h2>
+      <p class="muted">Based on the current date range from Overview.</p>
+      <div class="chart-wrap"><div id="monthlyDistanceChart" class="bar-chart"></div></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">TRAVEL FREQUENCY</div><h2>📊 Journeys by month</h2>
+      <div class="chart-wrap"><div id="monthlyTripsChart" class="bar-chart"></div></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">TRAVEL MODES</div><h2>🚗 How you travelled</h2>
+      <div id="modeBreakdown" class="list"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">TRAVEL COST HISTORY</div><h2>⛽ Estimated monthly fuel cost</h2>
+      <div class="row">
+        <div class="field"><label>Fuel price (₹/L)</label><input id="trendFuelPrice" type="number" value="70" min="0" step="0.01"></div>
+        <div class="field"><label>Mileage (km/L)</label><input id="trendMileage" type="number" value="40" min="0.1" step="0.1"></div>
+      </div>
+      <div id="costTotals" class="kpi-row" style="margin-top:10px"></div>
+      <div class="chart-wrap"><div id="monthlyCostChart" class="bar-chart"></div></div>
+    </div>
+  </section>
+
+  <section id="searchView" class="view">
+    <div class="card">
+      <div class="eyebrow">TIMELINE SEARCH</div><h2>🔎 Search your history</h2>
+      <p class="muted">Try a place name, Place ID, <b>motorcycle</b>, <b>car</b>, a date like <b>2025-12-27</b>, or a distance such as <b>&gt;50 km</b>.</p>
+      <div class="searchrow"><input id="globalSearch" type="search" placeholder="Search your Timeline…"><button id="globalClear" class="secondary smallbtn">Clear</button></div>
+    </div>
+    <div class="card">
+      <div id="searchSummary" class="muted">Enter a search term.</div>
+      <div id="searchResults" class="list search-results" style="margin-top:9px"></div>
+    </div>
+  </section>
+
+  <section id="toolsView" class="view">
+    <div class="two-col">
+      <div class="card tool-card">
+        <div class="eyebrow">TRAVEL COST</div><h2>⛽ Fuel calculator</h2>
+        <div class="row">
+          <div class="field"><label>Fuel price (₹/L)</label><input id="fuelPrice" type="number" value="70" min="0" step="0.01"></div>
+          <div class="field"><label>Mileage (km/L)</label><input id="mileage" type="number" value="40" min="0.1" step="0.1"></div>
+        </div>
+        <p id="fuel" style="font-weight:800"></p>
+      </div>
+      <div class="card tool-card">
+        <div class="eyebrow">DAILY HABIT</div><h2>🔔 Daily reminder</h2>
+        <div class="row">
+          <div class="field"><label>Reminder time</label><input id="reminderTime" type="time" value="21:00"></div>
+          <div class="field" style="align-self:end"><button id="reminderBtn" class="success">Enable reminder</button></div>
+        </div>
+        <p id="reminderStatus" class="muted">Browser notifications can be limited in the background on Android. The selected time is saved locally; exact background delivery is more reliable in a native Android app.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="reportView" class="view">
+    <div class="card">
+      <div class="eyebrow">PERSONAL REPORT</div><h2>📄 My travel report</h2>
+      <p class="muted">Generate a readable summary from the current date range. Nothing is uploaded.</p>
+      <div class="toolbar"><button id="generateReport">Generate report</button><button id="downloadReport" class="secondary">Download .txt</button><button id="printReport" class="secondary">Print / Save PDF</button></div>
+    </div>
+    <div class="card"><div class="report-pre" id="reportPreview">Generate a report to preview it here.</div></div>
+  </section>
+
+  <section id="importView" class="view">
+    <div class="card import-card">
+      <div class="eyebrow">DATA & PRIVACY</div><h2>📥 Timeline.json</h2>
+      <p class="muted">Choose a new exported Timeline.json to replace the current data. Existing custom place and route names remain stored in this browser until you clear them.</p>
+      <div class="toolbar">
+        <label class="filebtn">📂 Choose Timeline.json<input id="file2" class="fileinput" type="file" accept=".json,application/json"></label>
+        <button class="secondary smallbtn" id="guideBtn2">❓ Export guide</button>
+      </div>
+      <div id="loadProgress2" class="progress hidden"><div></div></div><p id="status2" class="muted"></p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">PRIVACY</div><h2>🔐 Local-first by design</h2>
+      <p class="muted">Your Timeline.json is read by this browser tab. The app does not send the file to this GitHub site. Map tiles are the only external network resource used for the map display.</p>
+    </div>
+  </section>
+
+  <footer class="footer">Timeline Analyzer V2.3 · By Dinesh · Understand where you've been.</footer>
+</main>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const APP_VERSION='2.2.0';
-let data=null,segments=[],activities=[],visits=[],pathPoints=[],map=null,routeLayer=null,markerLayer=null,selectedRoute=null,selectedRouteInfo=null,selectedPlace=null,placesShown=5,routesShown=5,integrityInfo=null,reminderTimer=null,pathTimesCache=[];
+const APP_VERSION='2.3.0';
+let data=null,segments=[],activities=[],visits=[],pathPoints=[],pathTimesCache=[];
+let map=null,routeLayer=null,markerLayer=null,heatLayer=null;
+let selectedRoute=null,selectedRouteInfo=null,selectedPlace=null;
+let placesShown=5,routesShown=5,reminderTimer=null,integrityInfo=null;
+let lastReport='';
+
 const $=id=>document.getElementById(id);
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function ll(value){if(value==null)return null;if(Array.isArray(value)&&value.length>=2){const a=Number(value[0]),b=Number(value[1]);return Number.isFinite(a)&&Number.isFinite(b)?[a,b]:null}const m=String(value).match(/(-?\d+(?:\.\d+)?)°?\s*,\s*(-?\d+(?:\.\d+)?)°?/);return m?[+m[1],+m[2]]:null}
+const money=x=>'₹'+Number(x||0).toLocaleString(undefined,{maximumFractionDigits:2});
+function ll(value){
+  if(value==null)return null;
+  if(Array.isArray(value)&&value.length>=2){const a=Number(value[0]),b=Number(value[1]);return Number.isFinite(a)&&Number.isFinite(b)?[a,b]:null}
+  const m=String(value).match(/(-?\d+(?:\.\d+)?)°?\s*,\s*(-?\d+(?:\.\d+)?)°?/);
+  return m?[+m[1],+m[2]]:null;
+}
 function datePart(t){return String(t||'').slice(0,10)}
 function rangeStart(d){return new Date(d+'T00:00:00').getTime()}
 function rangeEnd(d){return new Date(d+'T23:59:59.999').getTime()}
 function overlapSeconds(a,b,f,t){const x=Math.max(Date.parse(a),rangeStart(f)),y=Math.min(Date.parse(b),rangeEnd(t));return Math.max(0,(y-x)/1000)}
 function inRange(a,b,f,t){return Date.parse(b)>=rangeStart(f)&&Date.parse(a)<=rangeEnd(t)}
 function formatDuration(sec){sec=Math.max(0,Math.round(sec));const u=[['y',31536000],['mo',2592000],['d',86400],['h',3600],['m',60]],o=[];let s=sec;for(const [k,n] of u){const q=Math.floor(s/n);if(q){o.push(q+k);s%=n}}return o.join(' ')||'0m'}
+function formatDateTime(t){return new Date(t).toLocaleString()}
 function cluster(p){return p?Math.round(p[0]*180)/180+','+Math.round(p[1]*180)/180:null}
 function routeKey(a,b){const x=cluster(a),y=cluster(b);return x&&y?x+' → '+y:null}
-function mode(t){return ({MOTORCYCLING:'🏍️ Motorcycle',IN_PASSENGER_VEHICLE:'🚗 Car',WALKING:'🚶 Walking',CYCLING:'🚲 Cycling',IN_BUS:'🚌 Bus',IN_TRAIN:'🚆 Train',FLYING:'✈️ Flight'})[t]||('🚙 '+String(t||'Travel').replaceAll('_',' ').toLowerCase())}
-function haversine(a,b){if(!a||!b)return Infinity;const R=6371,dLat=(b[0]-a[0])*Math.PI/180,dLon=(b[1]-a[1])*Math.PI/180,la=a[0]*Math.PI/180,lb=b[0]*Math.PI/180,h=Math.sin(dLat/2)**2+Math.sin(dLon/2)**2*Math.cos(la)*Math.cos(lb)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.min(1,Math.sqrt(h)))}
-function getPlaceName(key){return (key?localStorage.getItem('tt-place-name-'+key):'')||''}
-function placeLabel(v,key){const saved=getPlaceName(key||v?.id||'');if(saved)return saved;if(v?.id&&v.id!=='Unknown place')return 'Place ID · '+v.id;return v?.p?'Location · '+v.p[0].toFixed(5)+', '+v.p[1].toFixed(5):'Unknown place'}
-function placeSubLabel(v,key){const saved=getPlaceName(key||v?.id||'');if(saved&&v?.id&&v.id!=='Unknown place')return 'Place ID · '+v.id;if(saved&&v?.p)return 'Location · '+v.p[0].toFixed(6)+', '+v.p[1].toFixed(6);return ''}
-function uniquePlaceCount(vs){return new Set(vs.filter(v=>v.id&&v.id!=='Unknown place').map(v=>v.id)).size}
-function parseTimeline(d){
- data=d;segments=Array.isArray(d?.semanticSegments)?d.semanticSegments:[];activities=[];visits=[];pathPoints=[];
- for(let i=0;i<segments.length;i++){const s=segments[i];if(!s||!s.startTime||!s.endTime)continue;
-   if(s.activity)activities.push({index:i,start:s.startTime,end:s.endTime,distance:+(s.activity.distanceMeters||0),mode:s.activity.topCandidate?.type||'UNKNOWN',a:ll(s.activity.start?.latLng),b:ll(s.activity.end?.latLng)});
-   if(s.visit){const v=s.visit.topCandidate||{};visits.push({index:i,start:s.startTime,end:s.endTime,id:v.placeId||'Unknown place',type:v.semanticType||'',prob:+(v.probability||0),p:ll(v.placeLocation?.latLng)});}
-   if(Array.isArray(s.timelinePath))for(const p of s.timelinePath){const pt=ll(p?.point);if(pt&&p?.time)pathPoints.push({time:p.time,p:pt});}
- }
- pathPoints.sort((a,b)=>Date.parse(a.time)-Date.parse(b.time));pathTimesCache=pathPoints.map(x=>Date.parse(x.time));
- const times=segments.flatMap(s=>[s?.startTime,s?.endTime]).filter(Boolean).sort((a,b)=>Date.parse(a)-Date.parse(b));if(!times.length)throw new Error('No dated semantic segments were found in this JSON.');
- const lo=datePart(times[0]),hi=datePart(times[times.length-1]);const ids=new Set(visits.map(v=>v.id).filter(id=>id&&id!=='Unknown place'));integrityInfo={segments:segments.length,activities:activities.length,visits:visits.length,pathSegments:segments.filter(s=>Array.isArray(s?.timelinePath)).length,points:pathPoints.length,places:ids.size};
- $('coverage').innerHTML='<b>'+new Date(times[0]).toLocaleString()+'</b> → <b>'+new Date(times[times.length-1]).toLocaleString()+'</b><br><span class="muted">'+segments.length.toLocaleString()+' segments · '+activities.length.toLocaleString()+' activities · '+visits.length.toLocaleString()+' visits · '+pathPoints.length.toLocaleString()+' timeline GPS points</span>';
- $('from').min=lo;$('from').max=hi;$('from').value=lo;$('to').min=lo;$('to').max=hi;$('to').value=hi;$('dashboard').classList.remove('hidden');placesShown=5;routesShown=5;selectedPlace=null;selectedRoute=null;selectedRouteInfo=null;renderIntegrity();initMap();render();
+function mode(t){return ({MOTORCYCLING:'🏍️ Motorcycle',IN_PASSENGER_VEHICLE:'🚗 Car',WALKING:'🚶 Walking',CYCLING:'🚲 Cycling',IN_BUS:'🚌 Bus',IN_TRAIN:'🚆 Train',FLYING:'✈️ Flight',SUBWAY:'🚇 Subway',TRAM:'🚋 Tram'})[t]||('🚙 '+String(t||'Travel').replaceAll('_',' ').toLowerCase())}
+function modeShort(t){return mode(t).replace(/^[^ ]+\s*/,'')}
+function haversine(a,b){
+  if(!a||!b)return Infinity;
+  const R=6371,dLat=(b[0]-a[0])*Math.PI/180,dLon=(b[1]-a[1])*Math.PI/180,la=a[0]*Math.PI/180,lb=b[0]*Math.PI/180;
+  const h=Math.sin(dLat/2)**2+Math.cos(la)*Math.cos(lb)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(h)));
 }
-function renderIntegrity(){if(!integrityInfo)return;$('integrity').innerHTML='<div class="notice"><b>✅ Timeline loaded and parsed</b><br>'+integrityInfo.segments.toLocaleString()+' segments · '+integrityInfo.activities.toLocaleString()+' activities · '+integrityInfo.visits.toLocaleString()+' visits · '+integrityInfo.places.toLocaleString()+' unique Place IDs · '+integrityInfo.points.toLocaleString()+' GPS points</div>'}
-function initMap(){if(map)return;map=L.map('map',{preferCanvas:true}).setView([20.6,78.9],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);routeLayer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map)}
-function render(){if(!data)return;const f=$('from').value,t=$('to').value;if(!f||!t||f>t)return;const acts=activities.filter(x=>inRange(x.start,x.end,f,t)),vs=visits.filter(x=>inRange(x.start,x.end,f,t));const km=acts.reduce((s,x)=>s+x.distance,0)/1000,sec=acts.reduce((s,x)=>s+overlapSeconds(x.start,x.end,f,t),0);$('distance').textContent=km.toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('journeys').textContent=acts.length.toLocaleString();$('travelTime').textContent=formatDuration(sec);$('placeCount').textContent=uniquePlaceCount(vs).toLocaleString();const fp=+$('fuelPrice').value||0,mi=+$('mileage').value||0;$('fuel').textContent=mi?`Estimated fuel: ${(km/mi).toLocaleString(undefined,{maximumFractionDigits:2})} L • Cost: ₹${(km/mi*fp).toLocaleString(undefined,{maximumFractionDigits:2})} • ₹${(fp/mi).toLocaleString(undefined,{maximumFractionDigits:2})}/km`:'Enter mileage';renderPlaces(vs,f,t);renderRoutes(acts);renderNamed(f,t);drawMap(acts,f,t)}
-function buildPlaces(vs,f,t){const g=new Map();for(const v of vs){const key=v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown');if(!g.has(key))g.set(key,{key,id:v.id,label:placeLabel(v,key),name:getPlaceName(key),type:v.type,sec:0,count:0,p:v.p,prob:v.prob});const x=g.get(key);x.sec+=overlapSeconds(v.start,v.end,f,t);x.count++;if(!x.p&&v.p)x.p=v.p;if(v.type&&!x.type)x.type=v.type}return[...g.values()].sort((a,b)=>b.sec-a.sec)}
-function renderPlaces(vs,f,t){let all=buildPlaces(vs,f,t);const q=($('placeSearch').value||'').trim().toLowerCase();if(q)all=all.filter(x=>(x.label+' '+(x.name||'')+' '+(x.id||'')+' '+(x.p?x.p.join(' '):'')+' '+(x.type||'')).toLowerCase().includes(q));const shown=Math.min(placesShown,all.length);$('placeCountLabel').textContent=q?`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} matching places`:`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} places`;let html=all.slice(0,shown).map((x,i)=>{const safe=encodeURIComponent(x.key),id=x.id&&x.id!=='Unknown place'?esc(x.id):'No Place ID',coords=x.p?`<div class="placehint">📍 ${x.p[0].toFixed(6)}, ${x.p[1].toFixed(6)}</div>`:'<div class="placehint">📍 No coordinates in export</div>',maps=x.p?`<a class="linkbtn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${x.p[0]},${x.p[1]}${x.id&&x.id!=="Unknown place"?'&query_place_id='+encodeURIComponent(x.id):''}">Open in Google Maps</a>`:'',saved=x.name||'';return`<div class="item"><strong>${i+1}. ${esc(x.label)}</strong>${placeSubLabel(x,x.key)?`<div class="placehint">${esc(placeSubLabel(x,x.key))}</div>`:''}<div><span class="pill">⏱️ ${formatDuration(x.sec)}</span><span class="pill">${x.count} visit${x.count===1?'':'s'}</span>${x.type?'<span class="pill">'+esc(x.type)+'</span>':''}</div>${coords}<div class="placehint">🆔 ${id}</div><div class="place-name-row"><input id="place-name-${i}" value="${esc(saved)}" placeholder="Add a name (e.g. Home, Office)" aria-label="Name this place"><button class="success smallbtn" onclick="savePlaceName('${safe}', document.getElementById('place-name-${i}').value)">💾 Save name</button></div><div class="item-actions"><button class="smallbtn" onclick="showPlace('${safe}')">🗺️ Show on TT map</button>${maps}<button class="secondary smallbtn" onclick="copyPlaceId('${encodeURIComponent(x.id||'')}')">📋 Copy Place ID</button></div></div>`}).join('');if(!html)html='<div class="empty muted">No places match this date range/search.</div>';if(all.length>shown)html+=`<button class="smallbtn" onclick="showMorePlaces()">Show more (${(all.length-shown).toLocaleString()} more)</button>`;else if(all.length>5&&!q)html+='<button class="smallbtn" onclick="showLessPlaces()">Show less</button>';$('places').innerHTML=html}
-function buildRoutes(acts){const g=new Map();for(const x of acts){const k=routeKey(x.a,x.b);if(!k)continue;if(!g.has(k))g.set(k,{key:k,count:0,dist:0,mode:x.mode});const q=g.get(k);q.count++;q.dist+=x.distance}return[...g.values()].sort((a,b)=>b.count-a.count||b.dist-a.dist)}
-function shortPoint(text){const p=String(text||'').split(',');if(p.length!==2)return text||'';return Number(p[0]).toFixed(4)+', '+Number(p[1]).toFixed(4)}
-function routeEndpoints(key){const [a,b]=String(key||'').split(' → ');return`<span class="route-endpoint">${esc(shortPoint(a))}</span><span class="route-arrow">→</span><span class="route-endpoint">${esc(shortPoint(b))}</span>`}
-function renderRoutes(acts){const all=buildRoutes(acts),shown=Math.min(routesShown,all.length);$('routeCountLabel').textContent=`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} grouped routes`;let html=all.slice(0,shown).map((x,i)=>{const safe=encodeURIComponent(x.key);return`<div class="item"><strong>${i+1}. Repeated route</strong><div class="route-endpoints">${routeEndpoints(x.key)}</div><span class="pill">🔁 ${x.count} trips</span><span class="pill">🛣️ ${(x.dist/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km</span><span class="pill">${mode(x.mode)}</span><div class="item-actions"><button class="smallbtn" onclick="highlightRoute('${safe}')">🗺️ Highlight on map</button><button class="smallbtn" onclick="nameTrip('${safe}')">🏷️ Name this trip</button></div></div>`}).join('');if(!html)html='<div class="empty muted">No journeys with usable start/end coordinates were found for this date range.</div>';if(all.length>shown)html+=`<button class="smallbtn" onclick="showMoreRoutes()">Show more (${(all.length-shown).toLocaleString()} more)</button>`;else if(all.length>5)html+='<button class="smallbtn" onclick="showLessRoutes()">Show less</button>';$('routes').innerHTML=html}
-function showMorePlaces(){placesShown+=5;render()}function showLessPlaces(){placesShown=5;render()}function showMoreRoutes(){routesShown+=5;render()}function showLessRoutes(){routesShown=5;render()}
-function copyPlaceId(encoded){const text=decodeURIComponent(encoded);if(!text)return;navigator.clipboard?.writeText(text).then(()=>{$('mapStatus').textContent='Place ID copied.'}).catch(()=>{$('mapStatus').textContent='Place ID: '+text})}
-function savePlaceName(encoded,value){const key=decodeURIComponent(encoded),name=String(value||'').trim();if(name)localStorage.setItem('tt-place-name-'+key,name);else localStorage.removeItem('tt-place-name-'+key);$('placeSearch').value='';placesShown=5;render();$('mapStatus').textContent=name?'Saved place name: '+name:'Place name cleared.'}
-function showPlace(encoded){const key=decodeURIComponent(encoded),f=$('from').value,t=$('to').value,vs=visits.filter(v=>{const k=v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown');return k===key&&inRange(v.start,v.end,f,t)}),p=vs.find(v=>v.p)?.p;if(!p){$('mapStatus').textContent='This place has no coordinates in the exported Timeline data.';return}selectedPlace={key,p,label:placeLabel(vs[0],key),id:vs[0]?.id||'',visits:vs.length};selectedRoute=null;selectedRouteInfo=null;drawMap(activities.filter(x=>inRange(x.start,x.end,f,t)),f,t);map.setView(p,15);map.invalidateSize();setTimeout(()=>$('map').scrollIntoView({behavior:'smooth',block:'center'}),60);L.popup().setLatLng(p).setContent('<b>📍 '+esc(selectedPlace.label)+'</b><br>Visits in range: '+vs.length).openOn(map);$('mapStatus').textContent='Selected place: '+selectedPlace.label+' · '+p[0].toFixed(6)+', '+p[1].toFixed(6)}
-function highlightRoute(encoded){const key=decodeURIComponent(encoded),f=$('from').value,t=$('to').value;const matches=activities.filter(x=>inRange(x.start,x.end,f,t)&&routeKey(x.a,x.b)===key);const info=buildRoutes(activities.filter(x=>inRange(x.start,x.end,f,t))).find(x=>x.key===key);selectedRoute=key;selectedRouteInfo={count:info?.count||matches.length,dist:info?.dist||matches.reduce((s,x)=>s+x.distance,0),mode:info?.mode||matches[0]?.mode||''};selectedPlace=null;drawMap(activities.filter(x=>inRange(x.start,x.end,f,t)),f,t);map.invalidateSize();setTimeout(()=>$('map').scrollIntoView({behavior:'smooth',block:'center'}),60)}
-function clearSelection(){selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;const f=$('from').value,t=$('to').value;drawMap(activities.filter(x=>inRange(x.start,x.end,f,t)),f,t)}
-function nameTrip(encoded){const k=decodeURIComponent(encoded),old=localStorage.getItem('tt-name-'+k)||'',n=prompt('Name this regular trip:',old);if(n===null)return;if(n.trim())localStorage.setItem('tt-name-'+k,n.trim());renderNamed($('from').value,$('to').value)}
-function renderNamed(f,t){const names=Object.keys(localStorage).filter(k=>k.startsWith('tt-name-')).map(k=>({key:k.slice(8),name:localStorage.getItem(k)}));$('named').innerHTML=names.length?names.map(x=>{const a=activities.filter(q=>routeKey(q.a,q.b)===x.key&&inRange(q.start,q.end,f,t));const km=a.reduce((s,q)=>s+q.distance,0)/1000;return`<div class="item"><strong>🏷️ ${esc(x.name)}</strong><br><span class="pill">${a.length} trips in selected range</span><span class="pill">${km.toFixed(1)} km</span><div class="item-actions"><button class="danger smallbtn" onclick="removeTrip('${encodeURIComponent(x.key)}')">Remove name</button></div></div>`}).join(''):'<span class="muted">No named trips yet. Name a repeated route above.</span>'}
-function removeTrip(e){localStorage.removeItem('tt-name-'+decodeURIComponent(e));renderNamed($('from').value,$('to').value)}
 function lowerBound(arr,target){let lo=0,hi=arr.length;while(lo<hi){const m=(lo+hi)>>1;if(arr[m]<target)lo=m+1;else hi=m}return lo}
+function getPlaceName(key){return(key?localStorage.getItem('ta-place-name-'+key):'')||''}
+function getTripName(key){return(key?localStorage.getItem('ta-trip-name-'+key):'')||''}
+function placeLabel(v,key){const saved=getPlaceName(key||v?.id||'');if(saved)return saved;if(v?.id&&v.id!=='Unknown place')return'Place ID · '+v.id;return v?.p?'Location · '+v.p[0].toFixed(5)+', '+v.p[1].toFixed(5):'Unknown place'}
+function placeSubLabel(v,key){const saved=getPlaceName(key||v?.id||'');if(saved&&v?.id&&v.id!=='Unknown place')return'Place ID · '+v.id;if(saved&&v?.p)return'Location · '+v.p[0].toFixed(6)+', '+v.p[1].toFixed(6);return''}
+function uniquePlaceCount(vs){return new Set(vs.filter(v=>v.id&&v.id!=='Unknown place').map(v=>v.id)).size}
+function notifyStatus(msg,success=false){$('status')&&($('status').innerHTML=success?'<span class="ok">'+esc(msg)+'</span>':esc(msg));$('status2')&&($('status2').innerHTML=success?'<span class="ok">'+esc(msg)+'</span>':esc(msg))}
+function parseTimeline(d){
+  data=d;segments=Array.isArray(d?.semanticSegments)?d.semanticSegments:[];
+  activities=[];visits=[];pathPoints=[];selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;placesShown=5;routesShown=5;
+  if(!segments.length)throw new Error('No semanticSegments were found in this JSON.');
+  for(let i=0;i<segments.length;i++){
+    const s=segments[i];if(!s||!s.startTime||!s.endTime)continue;
+    if(s.activity)activities.push({index:i,start:s.startTime,end:s.endTime,distance:+(s.activity.distanceMeters||0),mode:s.activity.topCandidate?.type||'UNKNOWN',a:ll(s.activity.start?.latLng),b:ll(s.activity.end?.latLng)});
+    if(s.visit){const v=s.visit.topCandidate||{};visits.push({index:i,start:s.startTime,end:s.endTime,id:v.placeId||'Unknown place',type:v.semanticType||'',prob:+(v.probability||0),p:ll(v.placeLocation?.latLng)});}
+    if(Array.isArray(s.timelinePath))for(const p of s.timelinePath){const pt=ll(p?.point);if(pt&&p?.time)pathPoints.push({time:p.time,p:pt});}
+  }
+  pathPoints.sort((a,b)=>Date.parse(a.time)-Date.parse(b.time));pathTimesCache=pathPoints.map(x=>Date.parse(x.time));
+  const times=segments.flatMap(s=>[s?.startTime,s?.endTime]).filter(Boolean).sort((a,b)=>Date.parse(a)-Date.parse(b));
+  if(!times.length)throw new Error('No dated semantic segments were found in this JSON.');
+  const lo=datePart(times[0]),hi=datePart(times[times.length-1]);
+  const ids=new Set(visits.map(v=>v.id).filter(id=>id&&id!=='Unknown place'));
+  integrityInfo={segments:segments.length,activities:activities.length,visits:visits.length,points:pathPoints.length,places:ids.size,lo,hi,start:times[0],end:times[times.length-1]};
+  $('from').min=lo;$('from').max=hi;$('from').value=lo;
+  $('to').min=lo;$('to').max=hi;$('to').value=hi;
+  $('otdDate').min=lo;$('otdDate').max=hi;$('otdDate').value=hi;
+  $('coverageValue').textContent=new Date(times[0]).toLocaleString()+' → '+new Date(times[times.length-1]).toLocaleString();
+  $('coverageMeta').textContent=segments.length.toLocaleString()+' segments · '+activities.length.toLocaleString()+' activities · '+visits.length.toLocaleString()+' visits · '+pathPoints.length.toLocaleString()+' timeline GPS points · '+ids.size.toLocaleString()+' unique Place IDs';
+  $('frontImport').classList.add('hidden');$('frontIntro').classList.add('hidden');$('frontData').classList.remove('hidden');
+  document.body.classList.add('data-ready');sessionStorage.setItem('ta-has-data','1');
+  renderAll();
+  openView('overview',false);
+}
+function getRange(){
+  const f=$('from').value,t=$('to').value;
+  if(!f||!t||f>t)return{f:null,t:null,acts:[],vs:[]};
+  return{f,t,acts:activities.filter(x=>inRange(x.start,x.end,f,t)),vs:visits.filter(x=>inRange(x.start,x.end,f,t))};
+}
+function buildPlaces(vs,f,t){
+  const g=new Map();
+  for(const v of vs){
+    const key=v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown');
+    if(!g.has(key))g.set(key,{key,id:v.id,label:placeLabel(v,key),name:getPlaceName(key),type:v.type,sec:0,count:0,p:v.p,first:v.start,last:v.end});
+    const x=g.get(key);x.sec+=overlapSeconds(v.start,v.end,f,t);x.count++;
+    if(Date.parse(v.start)<Date.parse(x.first))x.first=v.start;if(Date.parse(v.end)>Date.parse(x.last))x.last=v.end;
+    if(!x.p&&v.p)x.p=v.p;if(v.type&&!x.type)x.type=v.type;
+  }
+  return[...g.values()].sort((a,b)=>b.sec-a.sec);
+}
+function buildRoutes(acts){
+  const g=new Map();
+  for(const x of acts){const k=routeKey(x.a,x.b);if(!k)continue;if(!g.has(k))g.set(k,{key:k,count:0,dist:0,mode:x.mode,time:0,first:x.start,last:x.end});const q=g.get(k);q.count++;q.dist+=x.distance;q.time+=Math.max(0,(Date.parse(x.end)-Date.parse(x.start))/1000);if(Date.parse(x.start)<Date.parse(q.first))q.first=x.start;if(Date.parse(x.end)>Date.parse(q.last))q.last=x.end}
+  return[...g.values()].sort((a,b)=>b.count-a.count||b.dist-a.dist);
+}
+function routeEndpoints(key){const [a,b]=String(key||'').split(' → ');return'<span>'+esc(a)+'</span><span class="route-arrow">→</span><span>'+esc(b)+'</span>'}
+function shortRouteEndpoint(text){const p=String(text||'').split(',');return p.length===2?Number(p[0]).toFixed(4)+', '+Number(p[1]).toFixed(4):text}
+function namedTrips(){
+  return Object.keys(localStorage).filter(k=>k.startsWith('ta-trip-name-')).map(k=>({key:k.slice(13),name:localStorage.getItem(k)})).filter(x=>x.name);
+}
+function savePlaceName(encoded,value){
+  const key=decodeURIComponent(encoded),name=String(value||'').trim();
+  if(name)localStorage.setItem('ta-place-name-'+key,name);else localStorage.removeItem('ta-place-name-'+key);
+  renderPlaces(getRange().vs,getRange().f,getRange().t);
+}
+function saveTripName(encoded,value){const key=decodeURIComponent(encoded),name=String(value||'').trim();if(name)localStorage.setItem('ta-trip-name-'+key,name);else localStorage.removeItem('ta-trip-name-'+key);renderRoutes(getRange().acts);renderNamed(getRange().f,getRange().t)}
+function removeTripName(encoded){localStorage.removeItem('ta-trip-name-'+decodeURIComponent(encoded));renderNamed(getRange().f,getRange().t)}
+function renderPlaces(vs,f,t){
+  if(!f||!t)return;
+  let all=buildPlaces(vs,f,t);
+  const q=($('placeSearch').value||'').trim().toLowerCase();
+  if(q)all=all.filter(x=>(x.label+' '+(x.name||'')+' '+(x.id||'')+' '+(x.p?x.p.join(' '):'')+' '+(x.type||'')).toLowerCase().includes(q));
+  const shown=Math.min(placesShown,all.length);
+  $('placeCountLabel').textContent=q?`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} matching places`:`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} places`;
+  let html=all.slice(0,shown).map((x,i)=>{
+    const safe=encodeURIComponent(x.key),id=x.id&&x.id!=='Unknown place'?esc(x.id):'No Place ID';
+    const coords=x.p?`<div class="placehint">📍 ${x.p[0].toFixed(6)}, ${x.p[1].toFixed(6)}</div>`:'<div class="placehint">📍 No coordinates in export</div>';
+    const maps=x.p?`<a class="linkbtn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${x.p[0]},${x.p[1]}${x.id&&x.id!=="Unknown place"?'&query_place_id='+encodeURIComponent(x.id):''}">Open in Google Maps</a>`:'';
+    const saved=x.name||'';
+    return`<div class="item"><strong>${i+1}. ${esc(x.label)}</strong>${placeSubLabel(x,x.key)?`<div class="placehint">${esc(placeSubLabel(x,x.key))}</div>`:''}<div><span class="pill">⏱️ ${formatDuration(x.sec)}</span><span class="pill">${x.count} visit${x.count===1?'':'s'}</span>${x.type?'<span class="pill">'+esc(x.type)+'</span>':''}</div>${coords}<div class="placehint">🆔 ${id}</div><div class="place-name-row"><input id="place-name-${i}" value="${esc(saved)}" placeholder="Add a name (e.g. Home, Office)"><button class="success smallbtn" onclick="savePlaceName('${safe}',document.getElementById('place-name-${i}').value)">💾 Save</button></div><div class="item-actions"><button class="smallbtn" onclick="openPlaceInsights('${safe}')">📊 Insights</button><button class="smallbtn" onclick="showPlace('${safe}')">🗺️ Show on map</button>${maps}<button class="secondary smallbtn" onclick="copyPlaceId('${encodeURIComponent(x.id||'')}')">📋 Copy ID</button></div></div>`;
+  }).join('');
+  if(!html)html='<div class="empty muted">No places match this date range/search.</div>';
+  if(all.length>shown)html+=`<button class="smallbtn secondary" onclick="showMorePlaces()">Show more (${(all.length-shown).toLocaleString()} more)</button>`;
+  else if(all.length>5&&!q)html+='<button class="smallbtn secondary" onclick="showLessPlaces()">Show less</button>';
+  $('places').innerHTML=html;
+}
+function renderRoutes(acts){
+  const all=buildRoutes(acts),shown=Math.min(routesShown,all.length);
+  $('routeCountLabel').textContent=`Showing ${shown.toLocaleString()} of ${all.length.toLocaleString()} grouped routes`;
+  let html=all.slice(0,shown).map((x,i)=>{
+    const safe=encodeURIComponent(x.key),saved=getTripName(x.key);
+    return`<div class="item"><strong>${i+1}. ${saved?esc(saved):'Repeated route'}</strong><div class="route-endpoints">${routeEndpoints(x.key)}</div><span class="pill">🔁 ${x.count} trips</span><span class="pill">🛣️ ${(x.dist/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km</span><span class="pill">📏 ${(x.dist/x.count/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km/trip</span><span class="pill">${mode(x.mode)}</span><div class="item-actions"><button class="smallbtn" onclick="highlightRoute('${safe}')">🗺️ Highlight</button><button class="smallbtn" onclick="openRouteInsights('${safe}')">📊 Insights</button><button class="smallbtn" onclick="editTripName('${safe}')">🏷️ Name</button></div></div>`;
+  }).join('');
+  if(!html)html='<div class="empty muted">No journeys with usable start/end coordinates were found for this date range.</div>';
+  if(all.length>shown)html+=`<button class="smallbtn secondary" onclick="showMoreRoutes()">Show more (${(all.length-shown).toLocaleString()} more)</button>`;
+  else if(all.length>5)html+='<button class="smallbtn secondary" onclick="showLessRoutes()">Show less</button>';
+  $('routes').innerHTML=html;
+}
+function renderNamed(f,t){
+  const names=namedTrips();
+  $('named').innerHTML=names.length?names.map(x=>{
+    const a=activities.filter(q=>routeKey(q.a,q.b)===x.key&&inRange(q.start,q.end,f,t));
+    const km=a.reduce((s,q)=>s+q.distance,0)/1000;
+    return`<div class="item"><strong>🏷️ ${esc(x.name)}</strong><br><span class="pill">${a.length} trips in selected range</span><span class="pill">${km.toFixed(1)} km</span><div class="item-actions"><button class="danger smallbtn" onclick="removeTripName('${encodeURIComponent(x.key)}')">Remove name</button></div></div>`;
+  }).join(''):'<span class="muted">No named trips yet. Name a repeated route above.</span>';
+}
+function showMorePlaces(){placesShown+=5;renderPlaces(getRange().vs,getRange().f,getRange().t)}
+function showLessPlaces(){placesShown=5;renderPlaces(getRange().vs,getRange().f,getRange().t)}
+function showMoreRoutes(){routesShown+=5;renderRoutes(getRange().acts)}
+function showLessRoutes(){routesShown=5;renderRoutes(getRange().acts)}
+function editTripName(encoded){
+  const key=decodeURIComponent(encoded),old=getTripName(key),n=prompt('Name this regular trip:',old);
+  if(n===null)return;
+  saveTripName(encoded,n);
+}
+function copyPlaceId(encoded){
+  const text=decodeURIComponent(encoded);if(!text)return;
+  navigator.clipboard?.writeText(text).then(()=>{if($('mapStatus'))$('mapStatus').textContent='Place ID copied.'}).catch(()=>{if($('mapStatus'))$('mapStatus').textContent='Place ID: '+text});
+}
+function showPlace(encoded){
+  const key=decodeURIComponent(encoded),{f,t}=getRange();
+  const vs=visits.filter(v=>(v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown'))===key&&inRange(v.start,v.end,f,t));
+  const p=vs.find(v=>v.p)?.p;
+  if(!p){openView('mapView');$('mapStatus').textContent='This place has no coordinates in the exported Timeline data.';return}
+  selectedPlace={key,p,label:placeLabel(vs[0],key),id:vs[0]?.id||'',visits:vs.length};
+  selectedRoute=null;selectedRouteInfo=null;openView('mapView');renderMap();setTimeout(()=>{$('map').scrollIntoView({behavior:'smooth',block:'center'});map.setView(p,15)},80);
+}
+function highlightRoute(encoded){
+  const key=decodeURIComponent(encoded),{f,t}=getRange(),acts=activities.filter(x=>inRange(x.start,x.end,f,t)),info=buildRoutes(acts).find(x=>x.key===key);
+  selectedRoute=key;selectedRouteInfo=info?{count:info.count,dist:info.dist,mode:info.mode,time:info.time,first:info.first,last:info.last}:{count:0,dist:0,mode:'',time:0};
+  selectedPlace=null;openView('mapView');renderMap();setTimeout(()=>$('map').scrollIntoView({behavior:'smooth',block:'center'}),80);
+}
+function openPlaceInsights(encoded){
+  const key=decodeURIComponent(encoded),{f,t}=getRange();
+  const vs=visits.filter(v=>(v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown'))===key&&inRange(v.start,v.end,f,t));
+  const place=buildPlaces(vs,f,t).find(x=>x.key===key)||buildPlaces(visits.filter(v=>(v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown'))===key),f,t)[0];
+  if(!place){return}
+  const name=place.name||place.label,stays=vs.map(v=>overlapSeconds(v.start,v.end,f,t)),avg=stays.length?stays.reduce((a,b)=>a+b,0)/stays.length:0;
+  const html=`<div class="item" style="margin-top:12px"><strong>📍 ${esc(name)}</strong>${place.p?`<div class="placehint">${place.p[0].toFixed(6)}, ${place.p[1].toFixed(6)}</div>`:''}</div><div class="place-detail-grid" style="margin-top:9px"><div class="detail"><span>Visits</span><b>${place.count.toLocaleString()}</b></div><div class="detail"><span>Total time</span><b>${formatDuration(place.sec)}</b></div><div class="detail"><span>Average stay</span><b>${formatDuration(avg)}</b></div><div class="detail"><span>First in range</span><b>${place.first?formatDateTime(place.first):'—'}</b></div><div class="detail"><span>Last in range</span><b>${place.last?formatDateTime(place.last):'—'}</b></div><div class="detail"><span>Type</span><b>${esc(place.type||'Unknown')}</b></div></div><div class="item-actions" style="margin-top:12px"><button onclick="showPlace('${encodeURIComponent(key)}')">🗺️ Show on map</button>${place.p?`<a class="linkbtn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${place.p[0]},${place.p[1]}${place.id&&place.id!=='Unknown place'?'&query_place_id='+encodeURIComponent(place.id):''}">Open in Google Maps</a>`:''}</div>`;
+  openInsightModal('📍 Place insights',html);
+}
+function openRouteInsights(encoded){
+  const key=decodeURIComponent(encoded),{acts}=getRange(),all=acts.filter(a=>routeKey(a.a,a.b)===key);
+  if(!all.length)return;
+  const dist=all.reduce((s,a)=>s+a.distance,0),time=all.reduce((s,a)=>s+Math.max(0,(Date.parse(a.end)-Date.parse(a.start))/1000),0),name=getTripName(key)||'Unnamed route';
+  const first=all.slice().sort((a,b)=>Date.parse(a.start)-Date.parse(b.start))[0],last=all.slice().sort((a,b)=>Date.parse(b.end)-Date.parse(a.end))[0];
+  const html=`<div class="item" style="margin-top:12px"><strong>🔁 ${esc(name)}</strong><div class="route-endpoints" style="margin-top:5px">${routeEndpoints(key)}</div></div><div class="place-detail-grid" style="margin-top:9px"><div class="detail"><span>Trips</span><b>${all.length.toLocaleString()}</b></div><div class="detail"><span>Total distance</span><b>${(dist/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km</b></div><div class="detail"><span>Average / trip</span><b>${(dist/all.length/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km</b></div><div class="detail"><span>Travel time</span><b>${formatDuration(time)}</b></div><div class="detail"><span>First trip</span><b>${formatDateTime(first.start)}</b></div><div class="detail"><span>Last trip</span><b>${formatDateTime(last.end)}</b></div></div><div class="item-actions" style="margin-top:12px"><button onclick="highlightRoute('${encodeURIComponent(key)}')">🗺️ Highlight representative path</button><button class="secondary" onclick="editTripName('${encodeURIComponent(key)}')">🏷️ Rename</button></div>`;
+  openInsightModal('🔁 Route insights',html);
+}
+function openInsightModal(title,body){$('insightTitle').textContent=title;$('insightBody').innerHTML=body;$('insightModal').classList.remove('hidden')}
+function closeInsight(){ $('insightModal').classList.add('hidden') }
+
+function renderOverviewMetrics(){
+  const {acts,vs,f,t}=getRange();if(!f||!t)return;
+  const km=acts.reduce((s,x)=>s+x.distance,0)/1000,sec=acts.reduce((s,x)=>s+overlapSeconds(x.start,x.end,f,t),0);
+  const daySet=new Set(acts.map(x=>datePart(x.start)).filter(Boolean)),days=daySet.size;
+  $('distance').textContent=km.toLocaleString(undefined,{maximumFractionDigits:1})+' km';
+  $('journeys').textContent=acts.length.toLocaleString();$('travelTime').textContent=formatDuration(sec);$('placeCount').textContent=uniquePlaceCount(vs).toLocaleString();
+  $('avgDay').textContent=(days?km/days:0).toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('activeDays').textContent=days.toLocaleString();
+}
+function renderFuel(){
+  const {acts}=getRange(),km=acts.reduce((s,x)=>s+x.distance,0)/1000,fp=+$('fuelPrice').value||0,mi=+$('mileage').value||0;
+  $('fuel').textContent=mi?`Estimated fuel: ${(km/mi).toLocaleString(undefined,{maximumFractionDigits:2})} L • Cost: ${money(km/mi*fp)} • ${money(fp/mi)}/km`:'Enter mileage';
+}
+function aggregateMonths(acts){
+  const g=new Map();
+  for(const a of acts){const k=datePart(a.start).slice(0,7);if(!g.has(k))g.set(k,{month:k,km:0,trips:0,time:0});const x=g.get(k);x.km+=a.distance/1000;x.trips++;x.time+=Math.max(0,(Date.parse(a.end)-Date.parse(a.start))/1000)}
+  return[...g.values()].sort((a,b)=>a.month.localeCompare(b.month));
+}
+function aggregateModes(acts){
+  const g=new Map();for(const a of acts){g.set(a.mode,(g.get(a.mode)||0)+1)}return[...g.entries()].sort((a,b)=>b[1]-a[1])
+}
+function renderBarChart(elId,items,valueKey,formatVal){
+  const el=$(elId);if(!items.length){el.innerHTML='<div class="muted">No data for this range.</div>';return}
+  const max=Math.max(...items.map(x=>x[valueKey]),1);
+  el.innerHTML=items.map(x=>{const h=Math.max(3,x[valueKey]/max*150),label=x.month.slice(0,7),v=formatVal(x[valueKey]);return`<div class="bar-col"><div class="bar-value">${esc(v)}</div><div class="bar" style="height:${h}px"></div><div class="bar-label">${esc(label)}</div></div>`}).join('');
+}
+function renderDashboard(){
+  const {acts,vs}=getRange(),km=acts.reduce((s,x)=>s+x.distance,0)/1000,sec=acts.reduce((s,x)=>s+overlapSeconds(x.start,x.end,$('from').value,$('to').value),0);
+  const avg=acts.length?km/acts.length:0,modes=aggregateModes(acts),months=aggregateMonths(acts);
+  const longest=acts.slice().sort((a,b)=>b.distance-a.distance)[0],month=months.slice().sort((a,b)=>b.km-a.km)[0];
+  const days={};for(const a of acts){const d=datePart(a.start);days[d]=(days[d]||0)+a.distance/1000}const farDay=Object.entries(days).sort((a,b)=>b[1]-a[1])[0];
+  $('dashKm').textContent=km.toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('dashTrips').textContent=acts.length.toLocaleString();$('dashTime').textContent=formatDuration(sec);$('dashPlaces').textContent=uniquePlaceCount(vs).toLocaleString();$('dashAvgTrip').textContent=avg.toLocaleString(undefined,{maximumFractionDigits:1})+' km';$('dashMode').textContent=modes.length?modeShort(modes[0][0]):'—';$('dashLongest').textContent=longest?(longest.distance/1000).toLocaleString(undefined,{maximumFractionDigits:1})+' km':'0 km';$('dashMonth').textContent=month?month.month:'—';
+  $('recLongest').textContent=longest?`${(longest.distance/1000).toFixed(1)} km · ${modeShort(longest.mode)}`:'—';
+  $('recDay').textContent=farDay?`${farDay[0]} · ${farDay[1].toFixed(1)} km`:'—';
+  $('recMonth').textContent=month?`${month.month} · ${month.km.toFixed(1)} km`:'—';
+  $('recMode').textContent=modes.length?`${modeShort(modes[0][0])} · ${modes[0][1]} trips`:'—';
+  const top=buildPlaces(vs,$('from').value,$('to').value).slice(0,5);
+  $('topPlaces').innerHTML=top.length?top.map((x,i)=>`<div class="item"><strong>${i+1}. ${esc(x.label)}</strong><br><span class="pill">⏱️ ${formatDuration(x.sec)}</span><span class="pill">📍 ${x.count} visits</span><button class="secondary smallbtn" style="margin-top:7px" onclick="openPlaceInsights('${encodeURIComponent(x.key)}')">Insights</button></div>`).join(''):'<div class="muted">No place stays in this date range.</div>';
+}
+function renderOnThisDay(){
+  const d=$('otdDate').value;if(!d||!data)return;
+  const md=d.slice(5), matches=[];
+  const years=new Set(segments.flatMap(s=>[s?.startTime,s?.endTime]).filter(Boolean).map(datePart).filter(x=>x.slice(5)===md).map(x=>x.slice(0,4)));
+  let totalKm=0,totalTrips=0;
+  for(const y of [...years].sort()){const day=y+'-'+md;const acts=activities.filter(a=>datePart(a.start)===day||datePart(a.end)===day);const vs=visits.filter(v=>datePart(v.start)===day||datePart(v.end)===day);const km=acts.reduce((s,a)=>s+a.distance,0)/1000;totalKm+=km;totalTrips+=acts.length;const places=new Map();for(const v of vs){const k=v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown');places.set(k,(places.get(k)||0)+1)}let top=[...places.entries()].sort((a,b)=>b[1]-a[1])[0];let topName=top?placeLabel(vs.find(v=>(v.id===top[0]||cluster(v.p)===top[0])),top[0]):'—';matches.push({day,km,trips:acts.length,places:places.size,topName})}
+  $('otdSummary').innerHTML=`<div class="eyebrow">SAME CALENDAR DAY ACROSS YOUR HISTORY</div><h2>${new Date(d+'T12:00:00').toLocaleDateString(undefined,{month:'long',day:'numeric'})}</h2><div class="stats"><div class="stat"><span>Years found</span><b>${matches.length}</b></div><div class="stat"><span>Total distance</span><b>${totalKm.toFixed(1)} km</b></div><div class="stat"><span>Total journeys</span><b>${totalTrips}</b></div><div class="stat"><span>Recorded places</span><b>${matches.reduce((s,x)=>s+x.places,0)}</b></div></div>`;
+  $('otdYears').innerHTML=matches.length?matches.map(x=>`<div class="item"><strong>📅 ${x.day}</strong><br><span class="pill">🛣️ ${x.km.toFixed(1)} km</span><span class="pill">🔁 ${x.trips} trips</span><span class="pill">📍 ${x.places} places</span><div class="placehint">Most recorded place: ${esc(x.topName)}</div></div>`).join(''):'<div class="muted">No matching calendar day found.</div>';
+}
+function renderTrends(){
+  const {acts}=getRange(),months=aggregateMonths(acts);
+  renderBarChart('monthlyDistanceChart',months,'km',v=>v.toFixed(0)+' km');
+  renderBarChart('monthlyTripsChart',months,'trips',v=>String(v));
+  const modes=aggregateModes(acts),total=Math.max(acts.length,1);
+  $('modeBreakdown').innerHTML=modes.length?modes.slice(0,10).map(([m,c])=>`<div class="item"><strong>${esc(mode(m))}</strong><br><span class="pill">${c} trips</span><span class="pill">${(c/total*100).toFixed(1)}%</span><div class="progress"><div style="width:${(c/total*100).toFixed(1)}%"></div></div></div>`).join(''):'<div class="muted">No travel modes in this range.</div>';
+  const fp=+$('trendFuelPrice').value||0,mi=+$('trendMileage').value||0,totalKm=months.reduce((s,x)=>s+x.km,0),fuel=mi?totalKm/mi:0,cost=fuel*fp;
+  $('costTotals').innerHTML=`<div class="kpi"><span>Total distance</span><b>${totalKm.toFixed(1)} km</b></div><div class="kpi"><span>Estimated fuel</span><b>${fuel.toFixed(1)} L</b></div><div class="kpi"><span>Estimated cost</span><b>${money(cost)}</b></div><div class="kpi"><span>Cost / km</span><b>${mi?money(fp/mi):'—'}</b></div>`;
+  renderBarChart('monthlyCostChart',months.map(x=>({...x,cost:mi?(x.km/mi*fp):0})),'cost',v=>money(v));
+}
+function parseSearchQuery(q){
+  const s=q.trim().toLowerCase(),kmMatch=s.match(/^>(\d+(?:\.\d+)?)\s*km$|^over\s*(\d+(?:\.\d+)?)\s*km$/);
+  const dateMatch=s.match(/^\d{4}-\d{2}-\d{2}$/);
+  return{q:s,km:kmMatch?Number(kmMatch[1]||kmMatch[2]):null,date:dateMatch?s:null};
+}
+function renderSearch(){
+  const q=($('globalSearch').value||'').trim();if(!q){$('searchSummary').textContent='Enter a search term.';$('searchResults').innerHTML='';return}
+  const p=parseSearchQuery(q),results=[];
+  if(p.date){
+    activities.filter(a=>datePart(a.start)===p.date||datePart(a.end)===p.date).forEach(a=>results.push({kind:'Journey',title:`${p.date} · ${(a.distance/1000).toFixed(1)} km`,sub:`${mode(a.mode)} · ${formatDateTime(a.start)} → ${formatDateTime(a.end)}`}));
+    visits.filter(v=>datePart(v.start)===p.date||datePart(v.end)===p.date).forEach(v=>{const key=v.id&&v.id!=='Unknown place'?v.id:(cluster(v.p)||'unknown');results.push({kind:'Place',title:placeLabel(v,key),sub:`${formatDuration((Date.parse(v.end)-Date.parse(v.start))/1000)} stay · ${v.p?v.p.join(', '):'no coordinates'}`})});
+  }else{
+    const places=buildPlaces(visits,integrityInfo.lo,integrityInfo.hi).filter(x=>(x.label+' '+(x.name||'')+' '+(x.id||'')+' '+(x.p?x.p.join(' '):'')+' '+(x.type||'')).toLowerCase().includes(p.q)).slice(0,30);
+    places.forEach(x=>results.push({kind:'Place',title:x.label,sub:`${formatDuration(x.sec)} · ${x.count} visits`}));
+    activities.filter(a=>(mode(a.mode)+' '+a.mode).toLowerCase().includes(p.q)||(p.q.includes('car')&&a.mode==='IN_PASSENGER_VEHICLE')||(p.q.includes('motor')&&a.mode==='MOTORCYCLING')).slice(0,50).forEach(a=>{if(!p.km||a.distance/1000>p.km)results.push({kind:'Journey',title:`${(a.distance/1000).toFixed(1)} km · ${modeShort(a.mode)}`,sub:`${formatDateTime(a.start)} → ${formatDateTime(a.end)}`})});
+    if(p.km!==null){results.splice(0,results.length,...activities.filter(a=>a.distance/1000>p.km).slice(0,80).map(a=>({kind:'Journey',title:`${(a.distance/1000).toFixed(1)} km · ${modeShort(a.mode)}`,sub:`${formatDateTime(a.start)} → ${formatDateTime(a.end)}`})))}
+  }
+  $('searchSummary').textContent=`Found ${results.length.toLocaleString()} matching result${results.length===1?'':'s'} (showing up to 80).`;
+  $('searchResults').innerHTML=results.length?results.slice(0,80).map(r=>`<div class="item"><div class="result-title">${esc(r.title)}</div><div class="placehint">${esc(r.kind)} · ${esc(r.sub)}</div></div>`).join(''):'<div class="muted">No results found.</div>';
+}
+function ensureMap(){if(map)return;map=L.map('map',{preferCanvas:true}).setView([20.6,78.9],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);routeLayer=L.layerGroup().addTo(map);markerLayer=L.layerGroup().addTo(map);heatLayer=L.layerGroup().addTo(map)}
+function clearMapLayers(){routeLayer?.clearLayers();markerLayer?.clearLayers();heatLayer?.clearLayers()}
 function drawOverviewPath(f,t){
-  const a=lowerBound(pathTimesCache,rangeStart(f)),b=lowerBound(pathTimesCache,rangeEnd(t)+1);
-  const pts=pathPoints.slice(a,b);if(pts.length<2)return {lines:0,points:0,bounds:[]};
+  const a=lowerBound(pathTimesCache,rangeStart(f)),b=lowerBound(pathTimesCache,rangeEnd(t)+1),pts=pathPoints.slice(a,b);if(pts.length<2)return{lines:0,points:0,bounds:[]};
   const bounds=[],chunks=[];let cur=[pts[0].p];
-  for(let i=1;i<pts.length;i++){
-    const gap=Date.parse(pts[i].time)-Date.parse(pts[i-1].time);
-    if(gap>10*60*1000){if(cur.length>=2)chunks.push(cur);cur=[pts[i].p]}else cur.push(pts[i].p);
-  }
+  for(let i=1;i<pts.length;i++){const gap=Date.parse(pts[i].time)-Date.parse(pts[i-1].time);if(gap>10*60*1000){if(cur.length>=2)chunks.push(cur);cur=[pts[i].p]}else cur.push(pts[i].p)}
   if(cur.length>=2)chunks.push(cur);
-  for(const chunk of chunks){L.polyline(chunk,{weight:3,opacity:.55}).addTo(routeLayer);bounds.push(chunk[0],chunk[chunk.length-1])}
-  return {lines:chunks.length,points:pts.length,bounds};
+  for(const c of chunks){L.polyline(c,{weight:3,opacity:.55,smoothFactor:1}).addTo(routeLayer);bounds.push(c[0],c[c.length-1])}
+  return{lines:chunks.length,points:pts.length,bounds};
 }
-function findRepresentativeActivity(acts,chosen){const matches=acts.filter(a=>routeKey(a.a,a.b)===chosen);if(!matches.length)return null;return matches.slice().sort((a,b)=>{const ap=pathTimesCache.length?lowerBound(pathTimesCache,Date.parse(a.start)):0;const bp=pathTimesCache.length?lowerBound(pathTimesCache,Date.parse(b.start)):0;const aScore=(b.distance-a.distance)+(bp-ap)*0.0001;return b.distance-a.distance||aScore})[0]}
-function drawSelectedRoute(acts,chosen){let lines=0,points=0,bounds=[];const rep=findRepresentativeActivity(acts,chosen);if(!rep)return {lines,points,bounds,representative:false};const ia=lowerBound(pathTimesCache,Date.parse(rep.start)-120000),ib=lowerBound(pathTimesCache,Date.parse(rep.end)+120000),pts=pathPoints.slice(ia,ib).map(x=>x.p);const line=pts.length>=2?pts:(rep.a&&rep.b?[rep.a,rep.b]:[]);if(line.length>=2){L.polyline(line,{weight:6,opacity:.92,smoothFactor:1}).addTo(routeLayer);lines=1;points=line.length;bounds=[line[0],line[line.length-1]];return {lines,points,bounds,representative:true,activity:rep}}return {lines,points,bounds,representative:false,activity:rep}}
-function drawActivityLines(acts,chosen,place){
+function drawSelectedRoute(acts,chosen){
+  const matches=acts.filter(a=>routeKey(a.a,a.b)===chosen);if(!matches.length)return{lines:0,points:0,bounds:[],activity:null};
+  const rep=matches.slice().sort((a,b)=>b.distance-a.distance)[0];
+  const ia=lowerBound(pathTimesCache,Date.parse(rep.start)-120000),ib=lowerBound(pathTimesCache,Date.parse(rep.end)+120000),pts=pathPoints.slice(ia,ib).map(x=>x.p),line=pts.length>=2?pts:(rep.a&&rep.b?[rep.a,rep.b]:[]);
+  if(line.length>=2){L.polyline(line,{weight:6,opacity:.95,smoothFactor:1}).addTo(routeLayer);return{lines:1,points:line.length,bounds:[line[0],line[line.length-1]],activity:rep}}
+  return{lines:0,points:0,bounds:[],activity:rep};
+}
+function drawPlace(acts,place){
   let lines=0,points=0,bounds=[];
-  const source=chosen?acts.filter(x=>routeKey(x.a,x.b)===chosen):acts;
-  for(const a of source){
-    if(place&&(haversine(place.p,a.a)>2&&haversine(place.p,a.b)>2))continue;
-    const ia=lowerBound(pathTimesCache,Date.parse(a.start)-120000),ib=lowerBound(pathTimesCache,Date.parse(a.end)+120000),pts=pathPoints.slice(ia,ib).map(x=>x.p);
-    const line=pts.length>=2?pts:(a.a&&a.b?[a.a,a.b]:[]);
-    if(line.length>=2){L.polyline(line,{weight:chosen?6:2,opacity:chosen?.85:.35,smoothFactor:1}).addTo(routeLayer);lines++;points+=line.length;bounds.push(line[0],line[line.length-1])}
-  }
-  return {lines,points,bounds};
+  for(const a of acts){if(place&&haversine(place.p,a.a)>2&&haversine(place.p,a.b)>2)continue;const ia=lowerBound(pathTimesCache,Date.parse(a.start)-120000),ib=lowerBound(pathTimesCache,Date.parse(a.end)+120000),pts=pathPoints.slice(ia,ib).map(x=>x.p),line=pts.length>=2?pts:(a.a&&a.b?[a.a,a.b]:[]);if(line.length>=2){L.polyline(line,{weight:2,opacity:.35}).addTo(routeLayer);lines++;points+=line.length;bounds.push(line[0],line[line.length-1])}}
+  return{lines,points,bounds};
 }
-function drawMap(acts,f,t){
-  if(!map)return;routeLayer.clearLayers();markerLayer.clearLayers();
-  const chosen=selectedRoute,place=selectedPlace;let result;
-  if(chosen) result=drawSelectedRoute(acts,chosen); else if(place) result=drawActivityLines(acts,null,place); else result=drawOverviewPath(f,t);
-  let allBounds=result.bounds.slice();
-  if(chosen&&selectedRouteInfo){if(acts.length&&result.activity){if(result.activity.a)allBounds.push(result.activity.a);if(result.activity.b)allBounds.push(result.activity.b)}}
-  if(place){const pm=L.marker(place.p).addTo(markerLayer).bindPopup('<b>📍 '+esc(place.label)+'</b><br>Visits in range: '+place.visits);pm.openPopup();allBounds.push(place.p)}
-  if(allBounds.length){map.fitBounds(L.latLngBounds(allBounds),{padding:[24,24],maxZoom:place?16:(chosen?15:13)})}
-  if(chosen){const info=selectedRouteInfo||{};$('mapStatus').innerHTML=`<span class="selected-note">🗺️ Highlighted repeated route · ${Number(info.count||0).toLocaleString()} trips · ${(Number(info.dist||0)/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km · showing one representative path to keep the map clear.</span>`}else $('mapStatus').textContent=result.lines?`${result.lines.toLocaleString()} route lines • ${result.points.toLocaleString()} GPS points${place?' • selected place':''}`:'No GPS path lines were found for this date range. Try a route/place selection for a more focused view.';
+function drawHeatmap(f,t){
+  const a=lowerBound(pathTimesCache,rangeStart(f)),b=lowerBound(pathTimesCache,rangeEnd(t)+1),pts=pathPoints.slice(a,b);
+  const step=Math.max(1,Math.floor(pts.length/2500)),bounds=[];
+  for(let i=0;i<pts.length;i+=step){const p=pts[i].p;L.circleMarker(p,{radius:3,stroke:false,fillOpacity:.18,fillColor:'#d2042d'}).addTo(heatLayer);bounds.push(p)}
+  return{points:Math.min(pts.length,Math.ceil(pts.length/step)),bounds};
 }
-function resetMap(){clearSelection()}
-function scheduleReminder(){if(reminderTimer)clearTimeout(reminderTimer);reminderTimer=null;if(Notification.permission!=='granted')return;const [hh,mm]=$('reminderTime').value.split(':').map(Number);if(!Number.isFinite(hh)||!Number.isFinite(mm))return;const now=new Date(),next=new Date(now);next.setHours(hh,mm,0,0);if(next<=now)next.setDate(next.getDate()+1);reminderTimer=setTimeout(()=>{try{new Notification('Timeline Analyzer',{body:"Here's where you traveled today."})}catch{}scheduleReminder()},Math.max(1000,next-now))}
-function openHelp(){$('helpModal').classList.remove('hidden')}function closeHelp(){$('helpModal').classList.add('hidden');localStorage.setItem('tt-help-seen-v2.2','1')}
-$('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});if(!localStorage.getItem('tt-help-seen-v2.2'))openHelp();
-$('file').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;$('status').textContent='Reading '+file.name+'…';$('loadProgress').classList.remove('hidden');$('loadProgress').firstElementChild.style.width='10%';const r=new FileReader();r.onprogress=ev=>{if(ev.lengthComputable)$('loadProgress').firstElementChild.style.width=Math.max(10,Math.round(ev.loaded/ev.total*75))+'%'};r.onload=()=>{try{$('loadProgress').firstElementChild.style.width='90%';parseTimeline(JSON.parse(r.result));$('loadProgress').firstElementChild.style.width='100%';$('status').innerHTML='<span class="ok">Loaded successfully. Your JSON stays in this browser tab.</span>';setTimeout(()=>$('loadProgress').classList.add('hidden'),500)}catch(err){$('status').textContent='Could not read this Timeline JSON: '+(err?.message||'invalid JSON');$('loadProgress').classList.add('hidden')}};r.readAsText(file)});
-['from','to','fuelPrice','mileage'].forEach(id=>$(id).addEventListener('input',()=>{selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;placesShown=5;routesShown=5;render()}));$('placeSearch').addEventListener('input',()=>{placesShown=5;render()});$('clearPlaceSearch').onclick=()=>{$('placeSearch').value='';placesShown=5;render()};
-$('latest').onclick=()=>{const hi=$('to').max||$('to').value;$('from').value=hi;$('to').value=hi;clearSelection()};$('allDates').onclick=()=>{$('from').value=$('from').min;$('to').value=$('to').max;clearSelection()};$('resetMap').onclick=resetMap;$('clearSelection').onclick=clearSelection;
-$('clear').onclick=()=>{data=null;segments=[];activities=[];visits=[];pathPoints=[];pathTimesCache=[];selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;integrityInfo=null;$('dashboard').classList.add('hidden');$('file').value='';$('status').textContent='Imported data cleared.';if(map){routeLayer.clearLayers();markerLayer.clearLayers()}};
-$('reminderTime').addEventListener('change',()=>{localStorage.setItem('tt-reminder-time',$('reminderTime').value);if(Notification.permission==='granted')scheduleReminder()});const savedReminder=localStorage.getItem('tt-reminder-time');if(savedReminder)$('reminderTime').value=savedReminder;
-$('reminderBtn').onclick=async()=>{if(!('Notification'in window)){$('reminderStatus').textContent='This browser does not support notifications.';return}const p=await Notification.requestPermission();if(p==='granted'){localStorage.setItem('tt-reminder-time',$('reminderTime').value);scheduleReminder();$('reminderStatus').textContent='Reminder enabled for '+$('reminderTime').value+'. Android/browser behavior may still limit background delivery; a native APK is more reliable.'}else $('reminderStatus').textContent='Notification permission was not granted.'};
-if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&!sessionStorage.getItem('tt-sw-refresh-v2.2')){sessionStorage.setItem('tt-sw-refresh-v2.2','1');location.reload()}})})}).catch(()=>{})})}
+function renderMap(modeName=null){
+  if(!data)return;ensureMap();map.invalidateSize();clearMapLayers();
+  const {f,t,acts}=getRange(),chosen=selectedRoute,place=selectedPlace;let result={bounds:[]};
+  const m=modeName||document.querySelector('.map-tab.active')?.dataset.mapmode||'overview';
+  if(m==='heatmap'&&!chosen&&!place){const r=drawHeatmap(f,t);result={lines:0,points:r.points,bounds:r.bounds};$('mapStatus').textContent=`Travel density view · ${r.points.toLocaleString()} sampled GPS points.`}
+  else if(chosen){const r=drawSelectedRoute(acts,chosen);result=r;const info=selectedRouteInfo||{};$('mapStatus').innerHTML=`<span class="selected-note">🗺️ Highlighted repeated route · ${Number(info.count||0).toLocaleString()} trips · ${(Number(info.dist||0)/1000).toLocaleString(undefined,{maximumFractionDigits:1})} km · one representative path shown.</span>`}
+  else if(place){const r=drawPlace(acts,place);result=r;const mk=L.marker(place.p).addTo(markerLayer).bindPopup('<b>📍 '+esc(place.label)+'</b><br>Visits in range: '+place.visits);mk.openPopup();$('mapStatus').textContent='Selected place: '+place.label+' · '+place.visits+' visits'}
+  else {const r=drawOverviewPath(f,t);result=r;$('mapStatus').textContent=r.lines?`${r.lines.toLocaleString()} path chunks • ${r.points.toLocaleString()} GPS points`:'No GPS path lines were found for this range.'}
+  if(result.bounds?.length)map.fitBounds(L.latLngBounds(result.bounds),{padding:[24,24],maxZoom:chosen?15:(place?16:13)});
+}
+function resetMap(){selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;document.querySelectorAll('.map-tab').forEach(b=>b.classList.toggle('active',b.dataset.mapmode==='overview'));renderMap('overview')}
+function openView(id,fromMenu=true){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(id).classList.add('active');
+  if(fromMenu)closeMenu();
+  if(id==='mapView'){ensureMap();setTimeout(()=>renderMap(),40)}
+  if(id==='dashboardView')renderDashboard();
+  if(id==='placesView')renderPlaces(getRange().vs,getRange().f,getRange().t);
+  if(id==='routesView'){renderRoutes(getRange().acts);renderNamed(getRange().f,getRange().t)}
+  if(id==='trendsView')renderTrends();
+  if(id==='onThisDay')renderOnThisDay();
+  if(id==='reportView'){if(!lastReport)generateReport()}
+}
+function renderAll(){
+  if(!data)return;
+  renderOverviewMetrics();renderFuel();renderDashboard();
+  if(!$('otdDate').value&&integrityInfo)$('otdDate').value=integrityInfo.hi;
+  renderOnThisDay();renderPlaces(getRange().vs,getRange().f,getRange().t);renderRoutes(getRange().acts);renderNamed(getRange().f,getRange().t);renderTrends();renderSearch();renderReportPreview();
+  if(map&&$('mapView').classList.contains('active'))renderMap();
+}
+function buildReport(){
+  const {acts,vs,f,t}=getRange(),km=acts.reduce((s,a)=>s+a.distance,0)/1000,sec=acts.reduce((s,a)=>s+overlapSeconds(a.start,a.end,f,t),0),places=buildPlaces(vs,f,t),routes=buildRoutes(acts),months=aggregateMonths(acts),modes=aggregateModes(acts);
+  const days=new Set(acts.map(a=>datePart(a.start)).filter(Boolean)).size,longest=acts.slice().sort((a,b)=>b.distance-a.distance)[0],busyMonth=months.slice().sort((a,b)=>b.km-a.km)[0],topPlace=places[0],topRoute=routes[0];
+  return`TIMELINE ANALYZER V2.3
+Understand where you've been.
+By Dinesh
+============================================
+
+DATE RANGE
+${f} → ${t}
+
+SUMMARY
+--------
+Distance: ${km.toFixed(1)} km
+Journeys: ${acts.length}
+Travel time: ${formatDuration(sec)}
+Unique places: ${uniquePlaceCount(vs)}
+Active days: ${days}
+Average per active day: ${(days?km/days:0).toFixed(1)} km
+Average per journey: ${(acts.length?km/acts.length:0).toFixed(1)} km
+
+PERSONAL RECORDS
+----------------
+Longest journey: ${longest?(longest.distance/1000).toFixed(1)+' km · '+modeShort(longest.mode):'—'}
+Busiest month: ${busyMonth?busyMonth.month+' · '+busyMonth.km.toFixed(1)+' km':'—'}
+Most-used mode: ${modes.length?modeShort(modes[0][0])+' · '+modes[0][1]+' trips':'—'}
+Top place by time: ${topPlace?topPlace.label+' · '+formatDuration(topPlace.sec):'—'}
+Most repeated route: ${topRoute?topRoute.key+' · '+topRoute.count+' trips':'—'}
+
+TOP PLACES
+----------
+${places.slice(0,10).map((p,i)=>`${i+1}. ${p.label} — ${formatDuration(p.sec)} — ${p.count} visits`).join('\\n')||'No places'}
+
+TOP ROUTES
+----------
+${routes.slice(0,10).map((r,i)=>`${i+1}. ${r.key} — ${r.count} trips — ${(r.dist/1000).toFixed(1)} km — ${modeShort(r.mode)}`).join('\\n')||'No routes'}
+
+MONTHLY DISTANCE
+----------------
+${months.map(m=>`${m.month}: ${m.km.toFixed(1)} km · ${m.trips} trips`).join('\\n')||'No monthly data'}
+
+PRIVACY
+-------
+Timeline Analyzer processes your imported Timeline.json locally in this browser.
+Generated report is created on this device.
+`;
+}
+function generateReport(){if(!data)return;lastReport=buildReport();renderReportPreview();return lastReport}
+function renderReportPreview(){if($('reportPreview'))$('reportPreview').textContent=lastReport||'Generate a report to preview it here.'}
+function downloadReport(){
+  const txt=generateReport();if(!txt)return;const blob=new Blob([txt],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='timeline-analyzer-report.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function printReport(){generateReport();window.print()}
+function closeMenu(){$('sideMenu').classList.remove('open');$('menuOverlay').classList.remove('open')}
+function toggleMenu(){const open=!$('sideMenu').classList.contains('open');$('sideMenu').classList.toggle('open',open);$('menuOverlay').classList.toggle('open',open)}
+function openHelp(){$('helpModal').classList.remove('hidden')}
+function closeHelp(){$('helpModal').classList.add('hidden');localStorage.setItem('ta-help-seen-v2.3','1')}
+function setupFileInput(inputId,progressId,statusId){
+  $(inputId).addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    $(statusId).textContent='Reading '+file.name+'…';$(progressId).classList.remove('hidden');$(progressId).firstElementChild.style.width='10%';
+    const r=new FileReader();r.onprogress=ev=>{if(ev.lengthComputable)$(progressId).firstElementChild.style.width=Math.max(10,Math.round(ev.loaded/ev.total*75))+'%'};
+    r.onload=()=>{try{$(progressId).firstElementChild.style.width='90%';parseTimeline(JSON.parse(r.result));$(progressId).firstElementChild.style.width='100%';notifyStatus('Loaded successfully. Your JSON stays in this browser tab.',true);setTimeout(()=>$(progressId).classList.add('hidden'),500)}catch(err){$(statusId).textContent='Could not read this Timeline JSON: '+(err?.message||'invalid JSON');$(progressId).classList.add('hidden')}};
+    r.readAsText(file);
+  });
+}
+function scheduleReminder(){
+  if(reminderTimer)clearTimeout(reminderTimer);reminderTimer=null;
+  if(!('Notification'in window)||Notification.permission!=='granted')return;
+  const [hh,mm]=$('reminderTime').value.split(':').map(Number);if(!Number.isFinite(hh)||!Number.isFinite(mm))return;
+  const now=new Date(),next=new Date(now);next.setHours(hh,mm,0,0);if(next<=now)next.setDate(next.getDate()+1);
+  reminderTimer=setTimeout(()=>{try{new Notification('Timeline Analyzer',{body:"Here's where you traveled today."})}catch{}scheduleReminder()},Math.max(1000,next-now));
+}
+function clearLocalData(){
+  if(!confirm('Clear imported Timeline data from this browser tab? Your saved custom names can remain, but the imported history will be removed.'))return;
+  data=null;segments=[];activities=[];visits=[];pathPoints=[];pathTimesCache=[];selectedRoute=null;selectedPlace=null;selectedRouteInfo=null;integrityInfo=null;
+  if(map)clearMapLayers();document.body.classList.remove('data-ready');sessionStorage.removeItem('ta-has-data');$('frontData').classList.add('hidden');$('frontImport').classList.remove('hidden');$('frontIntro').classList.remove('hidden');$('file').value='';$('file2').value='';$('status').textContent='';$('status2').textContent='';openView('overview');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  $('menuBtn').onclick=toggleMenu;$('menuOverlay').onclick=closeMenu;
+  document.querySelectorAll('.menu-item[data-view]').forEach(b=>b.addEventListener('click',()=>openView(b.dataset.view)));
+  $('clearDataMenu').onclick=clearLocalData;
+  $('welcomeClose').onclick=closeHelp;$('guideBtn').onclick=openHelp;$('guideBtn2').onclick=openHelp;
+  $('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});
+  $('insightClose').onclick=closeInsight;$('insightModal').addEventListener('click',e=>{if(e.target.id==='insightModal')closeInsight()});
+  setupFileInput('file','loadProgress','status');setupFileInput('file2','loadProgress2','status2');
+  ['from','to'].forEach(id=>$(id).addEventListener('input',()=>{selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;placesShown=5;routesShown=5;renderAll()}));
+  ['fuelPrice','mileage'].forEach(id=>$(id).addEventListener('input',()=>{renderFuel();renderTrends()}));
+  $('latest').onclick=()=>{if(integrityInfo){$('from').value=integrityInfo.hi;$('to').value=integrityInfo.hi;renderAll()}};
+  $('allDates').onclick=()=>{if(integrityInfo){$('from').value=integrityInfo.lo;$('to').value=integrityInfo.hi;renderAll()}};
+  $('placeSearch').addEventListener('input',()=>{placesShown=5;renderPlaces(getRange().vs,getRange().f,getRange().t)});
+  $('clearPlaceSearch').onclick=()=>{$('placeSearch').value='';placesShown=5;renderPlaces(getRange().vs,getRange().f,getRange().t)};
+  document.querySelectorAll('.map-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.map-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');selectedRoute=null;selectedPlace=null;renderMap(b.dataset.mapmode)}));
+  $('mapClear').onclick=resetMap;
+  $('otdDate').addEventListener('change',renderOnThisDay);$('otdToday').onclick=()=>{if(integrityInfo){$('otdDate').value=integrityInfo.hi;renderOnThisDay()}};
+  $('trendFuelPrice').addEventListener('input',renderTrends);$('trendMileage').addEventListener('input',renderTrends);
+  $('globalSearch').addEventListener('input',renderSearch);$('globalClear').onclick=()=>{$('globalSearch').value='';renderSearch()};
+  $('generateReport').onclick=generateReport;$('downloadReport').onclick=downloadReport;$('printReport').onclick=printReport;
+  $('reminderTime').addEventListener('change',()=>{localStorage.setItem('ta-reminder-time',$('reminderTime').value);if(Notification.permission==='granted')scheduleReminder()});
+  const savedReminder=localStorage.getItem('ta-reminder-time');if(savedReminder)$('reminderTime').value=savedReminder;
+  $('reminderBtn').onclick=async()=>{if(!('Notification'in window)){$('reminderStatus').textContent='This browser does not support notifications.';return}const p=await Notification.requestPermission();if(p==='granted'){localStorage.setItem('ta-reminder-time',$('reminderTime').value);scheduleReminder();$('reminderStatus').textContent='Reminder enabled for '+$('reminderTime').value+'. Android/browser background limits may still apply.'}else $('reminderStatus').textContent='Notification permission was not granted.'};
+  if(!localStorage.getItem('ta-help-seen-v2.3'))openHelp();
+  if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&!sessionStorage.getItem('ta-sw-refresh-v2.3')){sessionStorage.setItem('ta-sw-refresh-v2.3','1');location.reload()}})})}).catch(()=>{})})}
+});
 </script>
-</body></html>
+</body>
+</html>
