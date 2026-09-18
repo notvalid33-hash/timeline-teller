@@ -1,10 +1,10 @@
-Timeline Analyzer V2.3
+Timeline Analyzer V2.4
 =======================
 
 Understand where you've been.
 By Dinesh
 
-V2.3
+V2.4
 ----
 - New hamburger menu to keep the Overview screen clean.
 - After Timeline.json loads, the front screen shows only Data coverage, Analyze a date range, and Summary.
@@ -20,7 +20,7 @@ V2.3
 - Personal report generator with download and Print / Save PDF.
 - Fuel calculator and daily reminder.
 - Import / JSON guide remains available from the menu.
-- V2.3 service-worker cache refresh.
+- V2.4 service-worker cache refresh.
 
 Privacy
 -------

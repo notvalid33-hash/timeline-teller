@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b1224">
 <meta name="description" content="Timeline Analyzer — understand where you've been. Private, local Google Maps Timeline history analysis.">
-<title>Timeline Analyzer V2.3</title>
+<title>Timeline Analyzer V2.4</title>
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
@@ -75,7 +75,8 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
 .side-menu.open{transform:translateX(0)}.menu-head{padding:18px;background:linear-gradient(135deg,#0b1224,#17223e);color:#fff}.menu-brand{font-weight:900;font-size:18px}.menu-tag{font-size:11px;color:#cbd5e1;margin-top:3px}.menu-list{padding:9px;overflow:auto;flex:1}
 .menu-item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;padding:11px 12px;background:transparent;color:#0f172a;border-radius:12px;box-shadow:none}.menu-item:hover{background:#f1f5f9;box-shadow:none;transform:none}.menu-icon{width:28px;text-align:center;font-size:18px}.menu-item small{display:block;color:#64748b;font-weight:600;margin-top:1px}
 .menu-divider{height:1px;background:#e8edf3;margin:8px 6px}.menu-foot{padding:12px;border-top:1px solid #e8edf3;font-size:11px;color:#64748b}
-.modal{position:fixed;inset:0;background:rgba(2,6,23,.68);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:14px;z-index:3000}
+ .modal{position:fixed;inset:0;background:rgba(2,6,23,.68);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:14px;z-index:3000}
+.sheet-handle{display:none}.modal-x{position:absolute;right:12px;top:10px;width:38px;height:38px;padding:0;border-radius:50%;background:#eef2f7;color:#0f172a;font-size:25px;line-height:1;box-shadow:none;z-index:2}.modal-x:hover{transform:none;box-shadow:none;background:#e2e8f0}.range-map-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;padding:9px;border-radius:12px;background:#f7f9fc;border:1px solid #e5eaf0}.range-map-links a{flex:1;min-width:150px;text-align:center}
 .modal.hidden{display:none}.modalbox{background:#fff;border-radius:20px;max-width:680px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(2,6,23,.28)}
 .welcome-box{overflow:hidden}.welcome-top{padding:24px 20px 18px;text-align:center;background:linear-gradient(180deg,#fbfcff,#fff);border-bottom:1px solid #edf1f5}
 .welcome-gear{color:var(--accent);font-size:52px;line-height:1;filter:drop-shadow(0 4px 12px rgba(210,4,45,.18));margin-bottom:8px}
@@ -94,7 +95,12 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
 .footer{text-align:center;color:#94a3b8;font-size:10px;padding:18px 6px 10px}
 @media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}.record-grid{grid-template-columns:repeat(4,1fr)}.place-detail-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:759px){.two-col{grid-template-columns:1fr}.header-badge{display:none}.sub{font-size:10px}.brand-mark{display:none}}
-@media(max-width:520px){.feature-grid{grid-template-columns:1fr}.place-detail-grid,.record-grid,.kpi-row{grid-template-columns:1fr 1fr}.welcome-brand{font-size:20px}}
+@media(max-width:520px){.feature-grid{grid-template-columns:1fr}.place-detail-grid,.record-grid,.kpi-row{grid-template-columns:1fr 1fr}.welcome-brand{font-size:20px}
+  .modal{align-items:flex-end;padding:0;background:rgba(2,6,23,.62)}
+  .modalbox{width:100%;max-width:none;max-height:88vh;border-radius:22px 22px 0 0;transform:translateY(0);transition:transform .18s ease;position:relative;touch-action:none}
+  .welcome-box{padding-top:8px}.sheet-handle{display:block;width:44px;height:5px;border-radius:99px;background:#cbd5e1;margin:3px auto 5px}.modal-x{right:12px;top:11px}
+  .welcome-top{padding:14px 46px 15px}.welcome-copy{padding:15px 18px 7px}.feature-grid{padding:8px 18px 12px}.guide-box{margin:4px 18px 12px}.privacy-note{margin:0 18px 13px}.modal-actions{padding:0 18px 18px}
+}
 @media print{
   .app-header,.menu-overlay,.side-menu,.modal,.no-print{display:none!important}
   body{background:#fff}.view{display:none!important}.view.active{display:block!important}
@@ -110,7 +116,7 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
     <div class="brand-wrap">
       <div class="brand-mark" aria-hidden="true">🗺️</div>
       <div class="brand-copy">
-        <div class="brand-title-row"><h1>Timeline Analyzer</h1><span class="version-badge">V2.3</span><span class="ready-dot"></span></div>
+        <div class="brand-title-row"><h1>Timeline Analyzer</h1><span class="version-badge">V2.4</span><span class="ready-dot"></span></div>
         <div class="sub">Understand where you've been.</div>
       </div>
     </div>
@@ -121,7 +127,7 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
 <div id="menuOverlay" class="menu-overlay"></div>
 <aside id="sideMenu" class="side-menu" aria-label="Timeline Analyzer menu">
   <div class="menu-head">
-    <div class="menu-brand">Timeline Analyzer <span class="version-badge">V2.3</span></div>
+    <div class="menu-brand">Timeline Analyzer <span class="version-badge">V2.4</span></div>
     <div class="menu-tag">Understand where you've been.</div>
   </div>
   <nav class="menu-list">
@@ -139,16 +145,18 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
     <button class="menu-item" data-view="importView"><span class="menu-icon">📥</span><span><b>Import / JSON guide</b><small>Change Timeline.json or view export steps</small></span></button>
     <button class="menu-item" id="clearDataMenu"><span class="menu-icon">🗑️</span><span><b>Clear local data</b><small>Remove imported history from this tab</small></span></button>
   </nav>
-  <div class="menu-foot">Timeline Analyzer V2.3 · By Dinesh<br>Your Timeline JSON is processed locally in this browser.</div>
+  <div class="menu-foot">Timeline Analyzer V2.4 · By Dinesh<br>Your Timeline JSON is processed locally in this browser.</div>
 </aside>
 
 <main>
   <!-- Opening welcome / export instructions -->
   <div id="helpModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-    <div class="modalbox welcome-box">
+    <div class="modalbox welcome-box" id="welcomeBox">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <button class="modal-x" id="welcomeX" aria-label="Close">×</button>
       <div class="welcome-top">
         <div class="welcome-gear" aria-hidden="true">⚙</div>
-        <div class="welcome-brand">Timeline Analyzer <span class="version-badge dark">V2.3</span></div>
+        <div class="welcome-brand">Timeline Analyzer <span class="version-badge dark">V2.4</span></div>
         <div class="by-dinesh">By Dinesh</div>
         <div class="welcome-tagline">Understand where you've been.</div>
       </div>
@@ -217,7 +225,9 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
         <div class="toolbar" style="margin-top:9px">
           <button id="latest" class="secondary">Latest day</button>
           <button id="allDates" class="secondary">Entire JSON</button>
+          <button id="showRangeMap" class="primary-cta">🗺️ Show travel on map</button>
         </div>
+        <div id="rangeMapLinks" class="range-map-links hidden"></div>
       </div>
       <div class="card">
         <div class="eyebrow">OVERVIEW</div>
@@ -309,7 +319,8 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
       </div>
       <div id="map"></div>
       <p id="mapStatus" class="muted"></p>
-      <p class="muted">Map tiles require internet access. Your Timeline JSON remains local.</p>
+      <div id="rangeMapLinksMap" class="range-map-links hidden"></div>
+      <p class="muted">Map tiles require internet access. Your Timeline JSON remains local. The TT map shows your Timeline GPS path; the Google Maps button opens a route between the selected range's endpoints.</p>
     </div>
   </section>
 
@@ -396,12 +407,12 @@ input:focus,select:focus{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(148,163,
     </div>
   </section>
 
-  <footer class="footer">Timeline Analyzer V2.3 · By Dinesh · Understand where you've been.</footer>
+  <footer class="footer">Timeline Analyzer V2.4 · By Dinesh · Understand where you've been.</footer>
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const APP_VERSION='2.3.0';
+const APP_VERSION='2.4.0';
 let data=null,segments=[],activities=[],visits=[],pathPoints=[],pathTimesCache=[];
 let map=null,routeLayer=null,markerLayer=null,heatLayer=null;
 let selectedRoute=null,selectedRouteInfo=null,selectedPlace=null;
@@ -701,6 +712,22 @@ function renderMap(modeName=null){
   if(result.bounds?.length)map.fitBounds(L.latLngBounds(result.bounds),{padding:[24,24],maxZoom:chosen?15:(place?16:13)});
 }
 function resetMap(){selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;document.querySelectorAll('.map-tab').forEach(b=>b.classList.toggle('active',b.dataset.mapmode==='overview'));renderMap('overview')}
+function getRangeEndpoints(acts,f,t){
+  const inA=acts.filter(a=>inRange(a.start,a.end,f,t)).sort((a,b)=>Date.parse(a.start)-Date.parse(b.start));
+  let start=inA.find(a=>a.a)?.a||null,end=inA.slice().reverse().find(a=>a.b)?.b||null;
+  if(!start||!end){const ia=lowerBound(pathTimesCache,rangeStart(f)),ib=lowerBound(pathTimesCache,rangeEnd(t)+1),pts=pathPoints.slice(ia,ib);if(pts.length){start=start||pts[0].p;end=end||pts[pts.length-1].p}}
+  return{start,end};
+}
+function updateRangeMapLinks(){
+  if(!integrityInfo)return;
+  const {f,t,acts}=getRange(),ep=getRangeEndpoints(acts,f,t);
+  const boxes=[$('rangeMapLinks'),$('rangeMapLinksMap')].filter(Boolean);
+  if(!ep.start||!ep.end){boxes.forEach(b=>{b.classList.add('hidden');b.innerHTML='' });return}
+  const g=`https://www.google.com/maps/dir/?api=1&origin=${ep.start[0]},${ep.start[1]}&destination=${ep.end[0]},${ep.end[1]}`;
+  const html=`<a class="linkbtn" href="${g}" target="_blank" rel="noopener">📍 Open selected range in Google Maps</a><span class="muted" style="align-self:center">TT map = actual Timeline path lines · Google Maps = endpoint directions</span>`;
+  boxes.forEach(b=>{b.classList.remove('hidden');b.innerHTML=html});
+}
+function showSelectedRangeMap(){openView('mapView');selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;document.querySelectorAll('.map-tab').forEach(b=>b.classList.toggle('active',b.dataset.mapmode==='overview'));setTimeout(()=>{renderMap('overview');updateRangeMapLinks();$('map').scrollIntoView({behavior:'smooth',block:'center'})},70)}
 function openView(id,fromMenu=true){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(id).classList.add('active');
   if(fromMenu)closeMenu();
@@ -714,7 +741,7 @@ function openView(id,fromMenu=true){
 }
 function renderAll(){
   if(!data)return;
-  renderOverviewMetrics();renderFuel();renderDashboard();
+  renderOverviewMetrics();renderFuel();renderDashboard();updateRangeMapLinks();
   if(!$('otdDate').value&&integrityInfo)$('otdDate').value=integrityInfo.hi;
   renderOnThisDay();renderPlaces(getRange().vs,getRange().f,getRange().t);renderRoutes(getRange().acts);renderNamed(getRange().f,getRange().t);renderTrends();renderSearch();renderReportPreview();
   if(map&&$('mapView').classList.contains('active'))renderMap();
@@ -722,7 +749,7 @@ function renderAll(){
 function buildReport(){
   const {acts,vs,f,t}=getRange(),km=acts.reduce((s,a)=>s+a.distance,0)/1000,sec=acts.reduce((s,a)=>s+overlapSeconds(a.start,a.end,f,t),0),places=buildPlaces(vs,f,t),routes=buildRoutes(acts),months=aggregateMonths(acts),modes=aggregateModes(acts);
   const days=new Set(acts.map(a=>datePart(a.start)).filter(Boolean)).size,longest=acts.slice().sort((a,b)=>b.distance-a.distance)[0],busyMonth=months.slice().sort((a,b)=>b.km-a.km)[0],topPlace=places[0],topRoute=routes[0];
-  return`TIMELINE ANALYZER V2.3
+  return`TIMELINE ANALYZER V2.4
 Understand where you've been.
 By Dinesh
 ============================================
@@ -775,7 +802,7 @@ function printReport(){generateReport();window.print()}
 function closeMenu(){$('sideMenu').classList.remove('open');$('menuOverlay').classList.remove('open')}
 function toggleMenu(){const open=!$('sideMenu').classList.contains('open');$('sideMenu').classList.toggle('open',open);$('menuOverlay').classList.toggle('open',open)}
 function openHelp(){$('helpModal').classList.remove('hidden')}
-function closeHelp(){$('helpModal').classList.add('hidden');localStorage.setItem('ta-help-seen-v2.3','1')}
+function closeHelp(){$('helpModal').classList.add('hidden');localStorage.setItem('ta-help-seen-v2.4','1')}
 function setupFileInput(inputId,progressId,statusId){
   $(inputId).addEventListener('change',e=>{
     const file=e.target.files[0];if(!file)return;
@@ -801,8 +828,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('menuBtn').onclick=toggleMenu;$('menuOverlay').onclick=closeMenu;
   document.querySelectorAll('.menu-item[data-view]').forEach(b=>b.addEventListener('click',()=>openView(b.dataset.view)));
   $('clearDataMenu').onclick=clearLocalData;
-  $('welcomeClose').onclick=closeHelp;$('guideBtn').onclick=openHelp;$('guideBtn2').onclick=openHelp;
+  $('welcomeClose').onclick=closeHelp;$('welcomeX').onclick=closeHelp;$('guideBtn').onclick=openHelp;$('guideBtn2').onclick=openHelp;$('showRangeMap').onclick=showSelectedRangeMap;
   $('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp()});
+  let dragStartY=0,dragging=false;const wb=$('welcomeBox');
+  wb.addEventListener('touchstart',e=>{dragStartY=e.touches[0].clientY;dragging=true;wb.style.transition='none'},{passive:true});
+  wb.addEventListener('touchmove',e=>{if(!dragging)return;const dy=Math.max(0,e.touches[0].clientY-dragStartY);if(dy>0)wb.style.transform=`translateY(${dy}px)`},{passive:true});
+  wb.addEventListener('touchend',()=>{if(!dragging)return;dragging=false;wb.style.transition='transform .18s ease';const m=wb.getBoundingClientRect();if(m.top>window.innerHeight*.38)closeHelp();else wb.style.transform='translateY(0)'},{passive:true});
   $('insightClose').onclick=closeInsight;$('insightModal').addEventListener('click',e=>{if(e.target.id==='insightModal')closeInsight()});
   setupFileInput('file','loadProgress','status');setupFileInput('file2','loadProgress2','status2');
   ['from','to'].forEach(id=>$(id).addEventListener('input',()=>{selectedRoute=null;selectedRouteInfo=null;selectedPlace=null;placesShown=5;routesShown=5;renderAll()}));
@@ -820,8 +851,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('reminderTime').addEventListener('change',()=>{localStorage.setItem('ta-reminder-time',$('reminderTime').value);if(Notification.permission==='granted')scheduleReminder()});
   const savedReminder=localStorage.getItem('ta-reminder-time');if(savedReminder)$('reminderTime').value=savedReminder;
   $('reminderBtn').onclick=async()=>{if(!('Notification'in window)){$('reminderStatus').textContent='This browser does not support notifications.';return}const p=await Notification.requestPermission();if(p==='granted'){localStorage.setItem('ta-reminder-time',$('reminderTime').value);scheduleReminder();$('reminderStatus').textContent='Reminder enabled for '+$('reminderTime').value+'. Android/browser background limits may still apply.'}else $('reminderStatus').textContent='Notification permission was not granted.'};
-  if(!localStorage.getItem('ta-help-seen-v2.3'))openHelp();
-  if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&!sessionStorage.getItem('ta-sw-refresh-v2.3')){sessionStorage.setItem('ta-sw-refresh-v2.3','1');location.reload()}})})}).catch(()=>{})})}
+  if(!localStorage.getItem('ta-help-seen-v2.4'))openHelp();
+  if('serviceWorker'in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').then(reg=>{reg.update();if(reg.waiting)reg.waiting.postMessage({type:'SKIP_WAITING'});reg.addEventListener('updatefound',()=>{const nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller&&!sessionStorage.getItem('ta-sw-refresh-v2.4')){sessionStorage.setItem('ta-sw-refresh-v2.4','1');location.reload()}})})}).catch(()=>{})})}
 });
 </script>
 </body>
